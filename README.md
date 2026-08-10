@@ -9,8 +9,16 @@ are not included here.
 
 ## Status
 
-The public Core is being prepared for its first source release. This initial
-repository setup intentionally contains no product source code yet.
+The first public source layer is available now:
+
+- [`@veriqorn/contracts`](packages/contracts) provides stable API and domain
+  contracts.
+- [`@veriqorn/extension-sdk`](packages/extension-sdk) provides the framework-
+  light contracts for Community and Enterprise extensions.
+
+Backend, frontend, Community images, and installation assets are being
+prepared for a later public source release. They are not yet included in this
+repository.
 
 ## License
 
