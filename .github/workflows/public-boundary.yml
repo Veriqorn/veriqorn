@@ -41,3 +41,13 @@ jobs:
             echo 'Potential secret detected.' >&2
             exit 1
           fi
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - name: Install public workspace dependencies
+        run: bun install
+
+      - name: Typecheck public packages
+        run: bun run check

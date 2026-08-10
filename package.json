@@ -1,0 +1,14 @@
+{
+  "name": "veriqorn-community-core",
+  "private": true,
+  "packageManager": "bun@1.3.11",
+  "workspaces": [
+    "packages/contracts",
+    "packages/extension-sdk"
+  ],
+  "scripts": {
+    "check": "bun run typecheck:contracts && bun run typecheck:extension-sdk",
+    "typecheck:contracts": "bun run --cwd packages/contracts typecheck",
+    "typecheck:extension-sdk": "bun run --cwd packages/extension-sdk typecheck"
+  }
+}
