@@ -131,4 +131,6 @@ jobs:
       - name: Sign published image
         env:
           IMAGE: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}@${{ steps.build.outputs.digest }}
-        run: cosign sign --yes "$IMAGE"
+        run: |
+          IMAGE="$(printf '%s' "$IMAGE" | tr '[:upper:]' '[:lower:]')"
+          cosign sign --yes "$IMAGE"
