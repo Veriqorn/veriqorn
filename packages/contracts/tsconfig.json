@@ -5,7 +5,9 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "declaration": true,
-    "noEmit": true,
+    "declarationMap": true,
+    "outDir": "dist",
+    "rootDir": "src",
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
