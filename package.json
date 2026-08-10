@@ -19,7 +19,8 @@
     "ws": "8.20.0"
   },
   "scripts": {
-    "check": "bun run typecheck:backend && bun run test:backend && bun run check:frontend && bun run check:packages",
+    "build:packages": "bun run --cwd packages/contracts build && bun run --cwd packages/extension-sdk build",
+    "check": "bun run build:packages && bun run typecheck:backend && bun run test:backend && bun run check:frontend && bun run check:packages",
     "check:frontend": "bun run --cwd frontend check",
     "check:packages": "bun run typecheck:contracts && bun run typecheck:extension-sdk",
     "test:backend": "bun run --cwd backend test",

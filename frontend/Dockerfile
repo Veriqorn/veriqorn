@@ -14,6 +14,8 @@ COPY frontend ./frontend
 COPY packages/contracts ./packages/contracts
 COPY packages/extension-sdk ./packages/extension-sdk
 
+RUN bun run --cwd packages/contracts build && bun run --cwd packages/extension-sdk build
+
 WORKDIR /app/frontend
 RUN bun run build
 
