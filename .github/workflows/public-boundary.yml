@@ -13,6 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify DCO sign-offs for pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          git fetch origin "$BASE_REF"
+          while IFS= read -r commit; do
+            if ! git log -1 --format=%B "$commit" | grep -Eq '^Signed-off-by: .+ <.+>$'; then
+              echo "Commit $commit is missing a Signed-off-by trailer." >&2
+              echo 'Create commits with: git commit -s' >&2
+              exit 1
+            fi
+          done < <(git rev-list "origin/$BASE_REF..HEAD")
 
       - name: Reject private implementation paths
         run: |
