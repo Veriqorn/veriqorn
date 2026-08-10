@@ -1,0 +1,43 @@
+name: Public boundary check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  public-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reject private implementation paths
+        run: |
+          forbidden=(
+            'backend/src/enterprise-staging'
+            'frontend/src/enterprise-staging'
+            'license-issuer'
+            'backend/extensions/enterprise-ai.manifest.json'
+          )
+          for path in "${forbidden[@]}"; do
+            if [ -e "$path" ]; then
+              echo "Forbidden private path: $path" >&2
+              exit 1
+            fi
+          done
+
+      - name: Scan for common secret patterns
+        run: |
+          if rg -n \
+            -g '!LICENSE' \
+            -g '!NOTICE' \
+            -g '!*.lock' \
+            -e 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' \
+            -e 'ghp_[A-Za-z0-9]{20,}' \
+            .; then
+            echo 'Potential secret detected.' >&2
+            exit 1
+          fi
