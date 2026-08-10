@@ -196,6 +196,7 @@ const createRuntimeContext = (extension: LoadedBackendExtension, config: AppConf
           return { ...context, projectId, user }
         },
         ok: (request, data) => ok(request, data),
+        createError: (status, code, message) => new HttpError(status, code, message),
         fail: (status, code, message) => { throw new HttpError(status, code, message) },
       },
       compatibilitySettings: {

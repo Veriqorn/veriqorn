@@ -74,6 +74,8 @@ export type ExtensionHttpPort = {
     user: { id: string; role: string; name: string }
   }>
   ok(request: Request, data: unknown): unknown
+  /** Creates a Core-normalized error without exposing the Core error class. */
+  createError(status: number, code: string, message: string): Error
   fail(status: number, code: string, message: string): never
 }
 
