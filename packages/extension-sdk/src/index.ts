@@ -58,6 +58,11 @@ export type ExtensionCompatibilitySettingsPort = {
 /** Opaque database adapter; the SDK deliberately does not expose TypeORM. */
 export type ExtensionDatabasePort = {
   getRepository(entity: unknown): unknown
+  /**
+   * Gives a first-party extension an opaque repository for a documented Core
+   * model. The entity class itself deliberately remains an internal Core API.
+   */
+  getCoreRepository(model: 'testRun' | 'testResult'): unknown
 }
 
 /** Minimal HTTP boundary for first-party route contributions. */

@@ -18,6 +18,8 @@ import { assertSafeOutboundUrl } from './outbound'
 import type { ExtensionServiceRegistry } from './extension-service-registry'
 import { ok, readAuthToken } from './http'
 import { requireProjectRole, type AppServices } from './services'
+import { TestResult } from './entities/test-result.entity'
+import { TestRun } from './entities/test-run.entity'
 
 export type LoadedBackendExtension = VeriqornBackendExtension & {
   modulePath: string
@@ -180,6 +182,7 @@ const createRuntimeContext = (extension: LoadedBackendExtension, config: AppConf
     core: {
       database: {
         getRepository: (entity) => services.dataSource.getRepository(entity as never),
+        getCoreRepository: (model) => services.dataSource.getRepository(model === 'testRun' ? TestRun : TestResult),
       },
       http: {
         authenticate,
