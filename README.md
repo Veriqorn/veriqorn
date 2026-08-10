@@ -33,6 +33,8 @@ bun run check
 
 Read the [Community Core and Enterprise extension architecture](docs/architecture.md)
 for the stable boundary, runtime licensing model, and contribution rules.
+For the maintainer-only artifact process, see the
+[Community release procedure](docs/releases.md).
 
 ## License
 
