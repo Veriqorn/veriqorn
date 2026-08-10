@@ -20,9 +20,69 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  verify:
+    name: Verify release boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reject private implementation paths
+        run: |
+          forbidden=(
+            'backend/src/enterprise-staging'
+            'frontend/src/enterprise-staging'
+            'license-issuer'
+            'backend/extensions/enterprise-ai.manifest.json'
+            'backend/uploads'
+            'test/test-results'
+          )
+          for path in "${forbidden[@]}"; do
+            if [ -e "$path" ]; then
+              echo "Forbidden private path: $path" >&2
+              exit 1
+            fi
+          done
+
+      - name: Scan for common secret patterns
+        run: |
+          if rg -n \
+            -g '!LICENSE' \
+            -g '!NOTICE' \
+            -g '!*.lock' \
+            -e 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' \
+            -e 'ghp_[A-Za-z0-9]{20,}' \
+            .; then
+            echo 'Potential secret detected.' >&2
+            exit 1
+          fi
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - name: Run Community source checks
+        run: |
+          bun install
+          bun run check
+
+      - name: Build and inspect Community images
+        run: |
+          docker build -f backend/Dockerfile -t veriqorn-community-backend:verify .
+          docker build -f frontend/Dockerfile -t veriqorn-community-frontend:verify .
+          docker run --rm --entrypoint sh veriqorn-community-backend:verify -c '
+            test ! -e /app/backend/src/enterprise-staging &&
+            test ! -e /app/backend/extensions/enterprise-ai.manifest.json &&
+            test ! -e /app/backend/uploads &&
+            test -f /app/backend/extensions/manifest.json
+          '
+          docker run --rm --entrypoint sh veriqorn-community-frontend:verify -c '
+            test ! -e /app/dist/extensions/enterprise-ai
+          '
+
   publish:
     name: Publish ${{ matrix.name }}
     runs-on: ubuntu-latest
+    needs: verify
     strategy:
       fail-fast: false
       matrix:
