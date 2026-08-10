@@ -37,6 +37,8 @@ jobs:
             'frontend/src/enterprise-staging'
             'license-issuer'
             'backend/extensions/enterprise-ai.manifest.json'
+            'backend/uploads'
+            'test/test-results'
           )
           for path in "${forbidden[@]}"; do
             if [ -e "$path" ]; then
