@@ -115,6 +115,7 @@ jobs:
             type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' || (github.ref_type == 'tag' && !contains(github.ref_name, '-')) }}
 
       - name: Build and publish image
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -124,3 +125,10 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           provenance: mode=max
           sbom: true
+
+      - uses: sigstore/cosign-installer@v3
+
+      - name: Sign published image
+        env:
+          IMAGE: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image }}@${{ steps.build.outputs.digest }}
+        run: cosign sign --yes "$IMAGE"
