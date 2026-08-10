@@ -97,6 +97,8 @@ export type ExtensionCorePorts = {
   /** Declarative outbound policy supplied by Core; extensions never read env directly. */
   network: {
     outboundAllowedHosts: string[]
+    /** Validates an extension's outbound HTTP(S) destination against Core policy. */
+    assertSafeOutboundUrl(url: string): Promise<string>
   }
 }
 

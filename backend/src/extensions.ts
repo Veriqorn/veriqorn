@@ -14,6 +14,7 @@ import {
 
 import type { AppConfig } from './config'
 import { HttpError } from './errors'
+import { assertSafeOutboundUrl } from './outbound'
 import type { ExtensionServiceRegistry } from './extension-service-registry'
 import { ok, readAuthToken } from './http'
 import { requireProjectRole, type AppServices } from './services'
@@ -217,6 +218,7 @@ const createRuntimeContext = (extension: LoadedBackendExtension, config: AppConf
       },
       network: {
         outboundAllowedHosts: [...config.outboundAllowedHosts],
+        assertSafeOutboundUrl: async (url) => (await assertSafeOutboundUrl(url, config.outboundAllowedHosts)).toString(),
       },
     },
     logger: createLogger(extension.manifest.id),
