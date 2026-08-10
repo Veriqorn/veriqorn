@@ -18,6 +18,7 @@ logs
 node_modules
 test/test-results
 backend/test
+backend/uploads
 backend/src/enterprise-staging
 frontend/src/enterprise-staging
 backend/extensions/enterprise-ai.manifest.json

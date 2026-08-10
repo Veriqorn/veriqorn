@@ -67,5 +67,25 @@ jobs:
       - name: Install public workspace dependencies
         run: bun install
 
-      - name: Typecheck public packages
+      - name: Run Community source checks
         run: bun run check
+
+      - name: Build Community images
+        run: |
+          docker build -f backend/Dockerfile -t veriqorn-community-backend:ci .
+          docker build -f frontend/Dockerfile -t veriqorn-community-frontend:ci .
+
+      - name: Inspect Community backend image boundary
+        run: |
+          docker run --rm --entrypoint sh veriqorn-community-backend:ci -c '
+            test ! -e /app/backend/src/enterprise-staging &&
+            test ! -e /app/backend/extensions/enterprise-ai.manifest.json &&
+            test ! -e /app/backend/uploads &&
+            test -f /app/backend/extensions/manifest.json
+          '
+
+      - name: Inspect Community frontend image boundary
+        run: |
+          docker run --rm --entrypoint sh veriqorn-community-frontend:ci -c '
+            test ! -e /app/dist/extensions/enterprise-ai
+          '
