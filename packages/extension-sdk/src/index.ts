@@ -197,3 +197,24 @@ export type VeriqornFrontendExtension = {
   resultDetails?: FrontendResultDetailContribution[]
   routes?: FrontendRouteContribution[]
 }
+
+/** Runtime bridge intentionally exposed by the Core frontend to same-origin extensions. */
+export type FrontendExtensionHost = {
+  activeProjectId: string | null
+  api: {
+    request<T>(path: string, init?: RequestInit): Promise<T>
+  }
+  isProLicensed: boolean
+  user: { id: string; name: string; role: string } | null
+}
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __VERIQORN_FRONTEND_EXTENSION_HOST__: FrontendExtensionHost | undefined
+}
+
+export const getFrontendExtensionHost = (): FrontendExtensionHost => {
+  const host = globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__
+  if (!host) throw new Error('Veriqorn frontend extension host is unavailable')
+  return host
+}

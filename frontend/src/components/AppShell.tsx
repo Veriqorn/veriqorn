@@ -146,6 +146,16 @@ export function AppShell() {
   )
 
   useEffect(() => {
+    globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ = {
+      activeProjectId: currentProjectId || null,
+      api: { request: apiClient.request },
+      isProLicensed,
+      user: user ? { id: user.id, name: user.name, role: user.role } : null,
+    }
+    return () => { delete globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ }
+  }, [apiClient.request, currentProjectId, isProLicensed, user])
+
+  useEffect(() => {
     if (routeProjectId && routeProjectId !== activeProjectId) {
       setActiveProjectId(routeProjectId)
     }
