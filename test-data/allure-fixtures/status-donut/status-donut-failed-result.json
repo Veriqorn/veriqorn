@@ -1,0 +1,27 @@
+{
+  "uuid": "status-donut-0002",
+  "name": "status donut failed test",
+  "status": "failed",
+  "start": 1734000001300,
+  "stop": 1734000002600,
+  "statusDetails": {
+    "message": "Intentional failed status for donut drilldown",
+    "trace": "AssertionError: expected value to be true"
+  },
+  "steps": [
+    {
+      "name": "open page",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1734000001300,
+      "stop": 1734000001800
+    },
+    {
+      "name": "validate",
+      "status": "failed",
+      "stage": "finished",
+      "start": 1734000001800,
+      "stop": 1734000002600
+    }
+  ]
+}

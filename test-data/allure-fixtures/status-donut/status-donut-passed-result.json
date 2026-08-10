@@ -1,0 +1,23 @@
+{
+  "uuid": "status-donut-0001",
+  "name": "status donut passed test",
+  "status": "passed",
+  "start": 1734000000000,
+  "stop": 1734000001200,
+  "steps": [
+    {
+      "name": "prepare",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1734000000000,
+      "stop": 1734000000600
+    },
+    {
+      "name": "assert",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1734000000600,
+      "stop": 1734000001200
+    }
+  ]
+}

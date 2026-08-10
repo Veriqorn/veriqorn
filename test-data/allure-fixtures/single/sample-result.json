@@ -1,0 +1,16 @@
+{
+  "uuid": "single-0001",
+  "name": "single fixture test",
+  "status": "passed",
+  "start": 1733000000000,
+  "stop": 1733000001000,
+  "steps": [
+    {
+      "name": "single step",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1733000000000,
+      "stop": 1733000001000
+    }
+  ]
+}

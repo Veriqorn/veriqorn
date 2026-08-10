@@ -9,16 +9,27 @@ are not included here.
 
 ## Status
 
-The first public source layer is available now:
+The Community Core source is available now:
 
+- [`backend`](backend) is the Community API and runtime.
+- [`frontend`](frontend) is the Community web UI.
 - [`@veriqorn/contracts`](packages/contracts) provides stable API and domain
   contracts.
 - [`@veriqorn/extension-sdk`](packages/extension-sdk) provides the framework-
   light contracts for Community and Enterprise extensions.
 
-Backend, frontend, Community images, and installation assets are being
-prepared for a later public source release. They are not yet included in this
-repository.
+The default extension manifest is empty. Enterprise capabilities are supplied
+by separately distributed proprietary extensions and are not part of this
+repository or its Community images.
+
+## Verify locally
+
+Requires Bun 1.3.11.
+
+```sh
+bun install --frozen-lockfile
+bun run check
+```
 
 Read the [Community Core and Enterprise extension architecture](docs/architecture.md)
 for the stable boundary, runtime licensing model, and contribution rules.

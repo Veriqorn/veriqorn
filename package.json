@@ -1,13 +1,29 @@
 {
-  "name": "veriqorn-community-core",
+  "name": "veriqorn",
   "private": true,
+  "description": "Apache-2.0 licensed Community Core for the Veriqorn quality intelligence platform.",
+  "license": "Apache-2.0",
   "packageManager": "bun@1.3.11",
   "workspaces": [
+    "frontend",
+    "backend",
     "packages/contracts",
     "packages/extension-sdk"
   ],
+  "overrides": {
+    "brace-expansion": "2.1.4",
+    "fast-xml-builder": "1.3.0",
+    "fast-xml-parser": "5.10.1",
+    "postcss": "8.5.25",
+    "uuid": "11.1.1",
+    "ws": "8.20.0"
+  },
   "scripts": {
-    "check": "bun run typecheck:contracts && bun run typecheck:extension-sdk",
+    "check": "bun run typecheck:backend && bun run test:backend && bun run check:frontend && bun run check:packages",
+    "check:frontend": "bun run --cwd frontend check",
+    "check:packages": "bun run typecheck:contracts && bun run typecheck:extension-sdk",
+    "test:backend": "bun run --cwd backend test",
+    "typecheck:backend": "bun run --cwd backend typecheck",
     "typecheck:contracts": "bun run --cwd packages/contracts typecheck",
     "typecheck:extension-sdk": "bun run --cwd packages/extension-sdk typecheck"
   }

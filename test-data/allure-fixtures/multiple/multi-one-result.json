@@ -1,0 +1,23 @@
+{
+  "uuid": "multiple-0001",
+  "name": "multiple fixture first test",
+  "status": "failed",
+  "start": 1733000100000,
+  "stop": 1733000101200,
+  "steps": [
+    {
+      "name": "open page",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1733000100000,
+      "stop": 1733000100400
+    },
+    {
+      "name": "submit form",
+      "status": "failed",
+      "stage": "finished",
+      "start": 1733000100400,
+      "stop": 1733000101200
+    }
+  ]
+}

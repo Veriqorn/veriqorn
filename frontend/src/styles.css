@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Aptos", "Segoe UI Variable Text", "Trebuchet MS", sans-serif;
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-card: rgb(var(--card));
+  --color-card-foreground: rgb(var(--card-foreground));
+  --color-popover: rgb(var(--popover));
+  --color-popover-foreground: rgb(var(--popover-foreground));
+  --color-primary: rgb(var(--primary));
+  --color-primary-foreground: rgb(var(--primary-foreground));
+  --color-secondary: rgb(var(--secondary));
+  --color-secondary-foreground: rgb(var(--secondary-foreground));
+  --color-muted: rgb(var(--muted));
+  --color-muted-foreground: rgb(var(--muted-foreground));
+  --color-accent: rgb(var(--accent));
+  --color-accent-foreground: rgb(var(--accent-foreground));
+  --color-destructive: rgb(var(--destructive));
+  --color-destructive-foreground: rgb(var(--destructive-foreground));
+  --color-success: rgb(var(--success));
+  --color-success-foreground: rgb(var(--success-foreground));
+  --color-warning: rgb(var(--warning));
+  --color-warning-foreground: rgb(var(--warning-foreground));
+  --color-border: rgb(var(--border));
+  --color-input: rgb(var(--input));
+  --color-ring: rgb(var(--ring));
+  --color-sidebar: rgb(var(--sidebar));
+  --color-sidebar-foreground: rgb(var(--sidebar-foreground));
+  --color-sidebar-muted: rgb(var(--sidebar-muted));
+  --color-sidebar-active: rgb(var(--sidebar-active));
+}
+
+:root {
+  color-scheme: light;
+
+  --background: 245 240 231;
+  --foreground: 24 31 45;
+
+  --card: 255 255 255;
+  --card-foreground: 24 31 45;
+
+  --popover: 255 255 255;
+  --popover-foreground: 24 31 45;
+
+  --primary: 17 109 240;
+  --primary-foreground: 255 255 255;
+
+  --secondary: 232 238 247;
+  --secondary-foreground: 40 53 74;
+
+  --muted: 234 239 246;
+  --muted-foreground: 98 110 131;
+
+  --accent: 255 197 104;
+  --accent-foreground: 71 47 8;
+
+  --destructive: 191 58 67;
+  --destructive-foreground: 255 246 247;
+
+  --success: 33 131 103;
+  --success-foreground: 245 255 251;
+
+  --warning: 168 99 21;
+  --warning-foreground: 255 249 236;
+
+  --border: 210 221 236;
+  --input: 198 211 230;
+  --ring: 17 109 240;
+
+  --sidebar: 22 31 48;
+  --sidebar-foreground: 248 250 255;
+  --sidebar-muted: 167 179 205;
+  --sidebar-active: 41 56 86;
+
+  --app-accent: var(--primary);
+  --app-accent-strong: 9 79 182;
+  --app-ink: var(--foreground);
+  --app-line: var(--border);
+  --app-muted: var(--muted-foreground);
+  --app-shell: var(--sidebar);
+  --app-surface: 236 231 222;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at top left, rgba(17, 109, 240, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(255, 197, 104, 0.18), transparent 22%),
+    linear-gradient(180deg, #f7f2e8 0%, #edf1f6 45%, #e7eef6 100%);
+  color: rgb(var(--foreground));
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-position: center;
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, black, transparent 82%);
+  pointer-events: none;
+}
+
+body,
+#root {
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(17, 109, 240, 0.2);
+}
+
+.surface-panel {
+  border: 1px solid rgb(var(--border) / 0.84);
+  border-radius: 1.75rem;
+  background: linear-gradient(180deg, rgb(var(--card) / 0.97), rgb(var(--card) / 0.9));
+  box-shadow: 0 28px 80px rgba(19, 26, 41, 0.1);
+  backdrop-filter: blur(20px);
+}
+
+.page-shell {
+  width: min(100%, 92rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 2vw, 1.75rem);
+}
+
+.eyebrow {
+  color: rgb(var(--muted-foreground));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

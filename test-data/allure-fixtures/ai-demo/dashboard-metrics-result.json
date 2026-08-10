@@ -1,0 +1,27 @@
+{
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567003",
+  "name": "Dashboard - should display correct test run metrics",
+  "status": "passed",
+  "start": 1743900050000,
+  "stop": 1743900055000,
+  "steps": [
+    {
+      "name": "Open dashboard",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900050000,
+      "stop": 1743900052000
+    },
+    {
+      "name": "Verify metrics widget",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900052000,
+      "stop": 1743900055000
+    }
+  ],
+  "labels": [
+    { "name": "suite", "value": "Dashboard E2E" },
+    { "name": "severity", "value": "normal" }
+  ]
+}

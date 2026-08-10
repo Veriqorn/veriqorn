@@ -1,0 +1,69 @@
+{
+  "datasetId": "ai-eval-fixture-v1",
+  "cases": [
+    {
+      "caseId": "payment-timeout",
+      "expectedEvidenceTokens": [
+        "retry.middleware.ts",
+        "payment/service.ts"
+      ],
+      "expectedRootCauseTokens": [
+        "timeout",
+        "retry threshold"
+      ],
+      "runs": [
+        {
+          "runId": "baseline",
+          "likelyRootCauses": [
+            "Timeout threshold changed in retry middleware",
+            "Payment service retry policy mismatch"
+          ],
+          "evidenceUris": [
+            "repo://backend/src/middleware/retry.middleware.ts#chunk-1",
+            "repo://backend/src/payment/service.ts#chunk-4"
+          ]
+        },
+        {
+          "runId": "repeat",
+          "likelyRootCauses": [
+            "Timeout threshold changed in retry middleware",
+            "Payment service retry policy mismatch"
+          ],
+          "evidenceUris": [
+            "repo://backend/src/middleware/retry.middleware.ts#chunk-1",
+            "repo://backend/src/payment/service.ts#chunk-4"
+          ]
+        }
+      ]
+    },
+    {
+      "caseId": "auth-refresh",
+      "expectedEvidenceTokens": [
+        "auth.service.ts"
+      ],
+      "expectedRootCauseTokens": [
+        "token refresh"
+      ],
+      "runs": [
+        {
+          "runId": "baseline",
+          "likelyRootCauses": [
+            "Cache invalidation race condition"
+          ],
+          "evidenceUris": [
+            "repo://backend/src/cache/cache.service.ts#chunk-3"
+          ]
+        },
+        {
+          "runId": "repeat",
+          "likelyRootCauses": [
+            "Token refresh guard not initialized"
+          ],
+          "evidenceUris": [
+            "repo://backend/src/auth/auth.service.ts#chunk-2"
+          ]
+        }
+      ]
+    }
+  ]
+}

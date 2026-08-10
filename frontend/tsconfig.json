@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@veriqorn/extension-sdk": ["../packages/extension-sdk/src/index.ts"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": [
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/runtime.ts",
+    "src/components/AppErrorBoundary.tsx",
+    "src/components/AppShell.tsx",
+    "src/extensions/**/*.ts",
+    "src/features/**/*.ts",
+    "src/lib/api.ts",
+    "src/lib/env.ts",
+    "src/lib/project-paths.ts",
+    "src/lib/queries.ts",
+    "src/lib/realtime.ts",
+    "src/providers/**/*.ts",
+    "src/providers/**/*.tsx",
+    "src/router/**/*.ts",
+    "src/routes/**/*.tsx",
+    "test/**/*.ts",
+    "src/types.ts",
+    "src/vite-env.d.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ]
+}

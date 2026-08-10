@@ -1,0 +1,39 @@
+{
+  "name": "veriqorn-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "reset-local-admin": "bun scripts/reset-local-admin.ts",
+    "build": "bun build src/index.ts --target bun --outdir dist --packages external",
+    "typecheck": "bun x tsc --noEmit -p tsconfig.json",
+    "lint": "oxlint src test",
+    "check": "bun run lint && bun run typecheck && bun run test:run && bun run build",
+    "test": "bun test",
+    "test:run": "bun test",
+    "test:watch": "bun test --watch"
+  },
+  "dependencies": {
+    "@veriqorn/contracts": "workspace:*",
+    "adm-zip": "0.6.0",
+    "bcrypt": "6.0.0",
+    "cookie": "1.1.1",
+    "dotenv": "17.4.2",
+    "elysia": "1.4.29",
+    "jose": "6.2.8",
+    "minio": "8.0.7",
+    "pg": "8.22.0",
+    "reflect-metadata": "0.2.2",
+    "typeorm": "0.3.31",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "6.0.0",
+    "@types/node": "26.1.2",
+    "bun-types": "1.3.14",
+    "oxlint": "1.77.0",
+    "typescript": "7.0.2"
+  }
+}

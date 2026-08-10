@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "useUnknownInCatchVariables": false,
+    "types": ["bun-types", "node"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "noEmit": true,
+    "allowJs": false,
+    "paths": {
+      "@veriqorn/contracts": ["../packages/contracts/src/index.ts"],
+      "@veriqorn/contracts/*": ["../packages/contracts/src/*"],
+      "@veriqorn/extension-sdk": ["../packages/extension-sdk/src/index.ts"]
+    },
+    "resolveJsonModule": true,
+    "useDefineForClassFields": false
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ]
+}

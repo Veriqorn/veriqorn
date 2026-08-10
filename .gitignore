@@ -3,6 +3,8 @@ dist/
 build/
 coverage/
 artifacts/
+backend/uploads/
+test/test-results/
 .env
 .env.*
 !.env.example

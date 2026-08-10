@@ -1,0 +1,27 @@
+{
+  "uuid": "status-donut-0004",
+  "name": "status donut broken test",
+  "status": "broken",
+  "start": 1734000003200,
+  "stop": 1734000004500,
+  "statusDetails": {
+    "message": "Intentional broken status for donut drilldown",
+    "trace": "TimeoutError: fixture execution timed out"
+  },
+  "steps": [
+    {
+      "name": "setup",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1734000003200,
+      "stop": 1734000003700
+    },
+    {
+      "name": "execute",
+      "status": "broken",
+      "stage": "finished",
+      "start": 1734000003700,
+      "stop": 1734000004500
+    }
+  ]
+}

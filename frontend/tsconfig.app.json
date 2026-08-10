@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "types": ["vite/client"],
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* Linting */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/runtime.ts",
+    "src/types.ts",
+    "src/vite-env.d.ts",
+    "src/components/AppErrorBoundary.tsx",
+    "src/components/AppShell.tsx",
+    "src/config/**/*.ts",
+    "src/features/navigation/**/*.ts",
+    "src/lib/api.ts",
+    "src/lib/env.ts",
+    "src/lib/project-paths.ts",
+    "src/lib/queries.ts",
+    "src/lib/realtime.ts",
+    "src/providers/**/*.tsx",
+    "src/router/**/*.ts",
+    "src/routes/**/*.tsx"
+  ]
+}

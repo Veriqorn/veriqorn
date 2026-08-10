@@ -1,0 +1,38 @@
+{
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567002",
+  "name": "Settings Page - should save notification settings",
+  "status": "broken",
+  "start": 1743900040000,
+  "stop": 1743900045000,
+  "statusDetails": {
+    "message": "TypeError: Cannot read properties of undefined (reading 'notificationSettings')",
+    "trace": "TypeError: Cannot read properties of undefined (reading 'notificationSettings')\n    at SettingsPage.saveNotifications (frontend/components/settings/NotificationSettingsSection.tsx:42:15)\n    at async onClick (frontend/components/settings/NotificationSettingsSection.tsx:87:5)\n    at async HTMLUnknownElement.callCallback (node_modules/react-dom/cjs/react-dom.development.js:4164:14)"
+  },
+  "steps": [
+    {
+      "name": "Open settings page",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900040000,
+      "stop": 1743900042000
+    },
+    {
+      "name": "Navigate to Notifications tab",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900042000,
+      "stop": 1743900043000
+    },
+    {
+      "name": "Toggle email notifications",
+      "status": "broken",
+      "stage": "finished",
+      "start": 1743900043000,
+      "stop": 1743900045000
+    }
+  ],
+  "labels": [
+    { "name": "suite", "value": "Settings E2E" },
+    { "name": "severity", "value": "normal" }
+  ]
+}

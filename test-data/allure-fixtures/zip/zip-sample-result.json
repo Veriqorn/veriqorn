@@ -1,0 +1,23 @@
+{
+  "uuid": "zip-0001",
+  "name": "zip fixture test",
+  "status": "broken",
+  "start": 1733000300000,
+  "stop": 1733000301500,
+  "steps": [
+    {
+      "name": "prepare data",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1733000300000,
+      "stop": 1733000300700
+    },
+    {
+      "name": "execute assertion",
+      "status": "broken",
+      "stage": "finished",
+      "start": 1733000300700,
+      "stop": 1733000301500
+    }
+  ]
+}

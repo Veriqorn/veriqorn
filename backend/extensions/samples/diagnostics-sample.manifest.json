@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "extensions": [
+    {
+      "id": "diagnostics-sample",
+      "version": "1.0.0",
+      "sdkApiVersion": 1,
+      "requiresCore": "*",
+      "displayName": "Diagnostics sample",
+      "requiredEntitlements": ["diagnostics.sample"],
+      "module": "./diagnostics-sample.mjs"
+    }
+  ]
+}

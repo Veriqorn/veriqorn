@@ -1,0 +1,52 @@
+{
+  "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567001",
+  "name": "Login Flow - should redirect to dashboard after valid login",
+  "status": "failed",
+  "start": 1743900001000,
+  "stop": 1743900032000,
+  "statusDetails": {
+    "message": "Error: expect(received).toHaveURL(expected)\nExpected URL: http://localhost:3000/dashboard\nReceived URL: http://localhost:3000/login",
+    "trace": "Error: expect(received).toHaveURL(expected)\n  Expected URL: http://localhost:3000/dashboard\n  Received URL: http://localhost:3000/login\n    at tests/e2e/auth/login.spec.ts:34:24\n\nCall log:\n  - navigating to http://localhost:3000/login\n  - locator(\"input[name=email]\").fill(\"admin@example.com\")\n  - locator(\"input[name=password]\").fill(\"admin123\")\n  - locator(\"button[type=submit]\").click()\n  - waiting for URL http://localhost:3000/dashboard\n  - received URL http://localhost:3000/login\n\nBrowser logs:\n  [error] POST http://localhost:3001/auth/login 401 (Unauthorized)\n  [error] AuthService: Invalid credentials for email admin@example.com"
+  },
+  "steps": [
+    {
+      "name": "Navigate to login page",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900001000,
+      "stop": 1743900003000
+    },
+    {
+      "name": "Fill email field",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900003000,
+      "stop": 1743900004000
+    },
+    {
+      "name": "Fill password field",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900004000,
+      "stop": 1743900005000
+    },
+    {
+      "name": "Click submit button",
+      "status": "passed",
+      "stage": "finished",
+      "start": 1743900005000,
+      "stop": 1743900006000
+    },
+    {
+      "name": "Expect redirect to dashboard",
+      "status": "failed",
+      "stage": "finished",
+      "start": 1743900006000,
+      "stop": 1743900032000
+    }
+  ],
+  "labels": [
+    { "name": "suite", "value": "Auth E2E" },
+    { "name": "severity", "value": "critical" }
+  ]
+}
