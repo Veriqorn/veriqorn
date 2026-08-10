@@ -20,6 +20,9 @@ Backend, frontend, Community images, and installation assets are being
 prepared for a later public source release. They are not yet included in this
 repository.
 
+Read the [Community Core and Enterprise extension architecture](docs/architecture.md)
+for the stable boundary, runtime licensing model, and contribution rules.
+
 ## License
 
 Copyright 2026 Veriqorn contributors. Licensed under the
