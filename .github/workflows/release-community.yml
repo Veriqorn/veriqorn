@@ -62,7 +62,7 @@ jobs:
 
       - name: Run Community source checks
         run: |
-          bun install
+          bun install --frozen-lockfile
           bun run check
 
       - name: Build and inspect Community images
