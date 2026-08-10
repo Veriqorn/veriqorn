@@ -1,0 +1,65 @@
+name: Publish Core SDK packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: SemVer version for both SDK packages (for example, 0.1.0)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    name: Build and publish public SDK packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@veriqorn'
+
+      - name: Validate requested version
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]
+
+      - name: Install and check packages
+        run: |
+          bun install --frozen-lockfile
+          bun run check:packages
+
+      - name: Build package artifacts
+        run: |
+          bun run --cwd packages/contracts build
+          bun run --cwd packages/extension-sdk build
+
+      - name: Set release version without changing Git
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          npm pkg set version="$VERSION" --workspace @veriqorn/contracts
+          npm pkg set version="$VERSION" --workspace @veriqorn/extension-sdk
+
+      - name: Publish contracts
+        working-directory: packages/contracts
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish --access public
+
+      - name: Publish extension SDK
+        working-directory: packages/extension-sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish --access public
