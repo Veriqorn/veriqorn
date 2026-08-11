@@ -209,6 +209,8 @@ export type FrontendExtensionHost = {
   react: unknown
   api: {
     request<T>(path: string, init?: RequestInit): Promise<T>
+    /** Authenticated same-origin request that preserves a streaming response body. */
+    requestRaw(path: string, init?: RequestInit): Promise<Response>
   }
   isProLicensed: boolean
   user: { id: string; name: string; role: string } | null

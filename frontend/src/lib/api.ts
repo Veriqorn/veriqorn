@@ -63,8 +63,11 @@ const parseResponse = async (response: Response) => {
 
 export function createApiClient({ baseUrl }: { baseUrl: string }) {
   const normalizedBaseUrl = baseUrl.replace(/\/+$/, '')
+  const resolveRequestUrl = (path: string) => path.startsWith('http')
+    ? path
+    : `${normalizedBaseUrl}${path.startsWith('/') ? path : `/${path}`}`
 
-  const request = async <T>(path: string, init: RequestInit = {}): Promise<T> => {
+  const requestRaw = async (path: string, init: RequestInit = {}): Promise<Response> => {
     const isFormData = init.body instanceof FormData
     const headers = new Headers(init.headers)
 
@@ -76,15 +79,18 @@ export function createApiClient({ baseUrl }: { baseUrl: string }) {
       headers.set('Content-Type', 'application/json')
     }
 
-    const url = path.startsWith('http')
-      ? path
-      : `${normalizedBaseUrl}${path.startsWith('/') ? path : `/${path}`}`
+    const url = resolveRequestUrl(path)
 
-    const response = await fetch(url, {
+    return fetch(url, {
       ...init,
       credentials: 'include',
       headers,
     })
+  }
+
+  const request = async <T>(path: string, init: RequestInit = {}): Promise<T> => {
+    const url = resolveRequestUrl(path)
+    const response = await requestRaw(path, init)
     const body = await parseResponse(response)
 
     if (!response.ok) {
@@ -120,6 +126,7 @@ export function createApiClient({ baseUrl }: { baseUrl: string }) {
         method: 'PUT',
       }),
     request,
+    requestRaw,
     upload: <T>(path: string, body: FormData) =>
       request<T>(path, {
         body,
