@@ -103,6 +103,34 @@ describe('product entitlement license v3', () => {
     })
   })
 
+  test('accepts a schema-v3 license through the legacy AI activation route', async () => {
+    let received: unknown
+    const app = createTestApp({
+      services: {
+        entitlements: {
+          activate: async (license: unknown) => {
+            received = license
+            return { success: true, message: 'License activated successfully.', licenseId: 'lic_v3_test' }
+          },
+        },
+      } as never,
+    })
+    const license = {
+      payload: { schemaVersion: 3, licenseId: 'lic_v3_test' },
+      signature: { algorithm: 'Ed25519', keyId: 'test-key-1', value: 'signature' },
+    }
+
+    const response = await app.handle(new Request('http://localhost/api/v1/ai/license-activations', {
+      method: 'POST',
+      headers: { authorization: 'Bearer test-token', 'content-type': 'application/json' },
+      body: JSON.stringify(license),
+    }))
+
+    expect(response.status).toBe(200)
+    expect(received).toEqual(license)
+    await expect(response.json()).resolves.toMatchObject({ data: { licenseId: 'lic_v3_test' } })
+  })
+
   test('keeps Core operable while an expired product license denies its entitlement', async () => {
     const issuer = generateKeyPairSync('ed25519')
     process.env.VERIQORN_LICENSE_PUBLIC_KEYS = JSON.stringify({

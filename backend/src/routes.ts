@@ -1752,14 +1752,14 @@ export const registerRoutes = (
       ai.post("/license-activations", async ({ request }) => {
         await requireAdmin(request);
         const body = await request.json().catch(() => ({})) as unknown;
-        const result = await services.aiEdition.activateLicense(body);
+        const result = await services.entitlements.activate(body);
         if (!result.success) throw new HttpError(400, "LICENSE_INVALID", result.message);
         return ok(request, result);
       });
 
       ai.get("/license-activation-request", async ({ request }) => {
         await requireAdmin(request);
-        return ok(request, await services.aiEdition.getLicenseActivationRequest());
+        return ok(request, await services.entitlements.getActivationRequest());
       });
 
       ai.get("/auto-index/status", async ({ request }) => {
