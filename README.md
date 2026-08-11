@@ -18,9 +18,21 @@ The Community Core source is available now:
 - [`@veriqorn/extension-sdk`](packages/extension-sdk) provides the framework-
   light contracts for Community and Enterprise extensions.
 
-The default extension manifest is empty. Enterprise capabilities are supplied
-by separately distributed proprietary extensions and are not part of this
-repository or its Community images.
+The default extension manifest is empty. Enterprise capabilities are available
+as separately licensed extensions. See the [Enterprise overview](https://veriqorn.vercel.app/pricing)
+to compare editions, or the [Enterprise deployment guide](https://veriqorn.vercel.app/docs/ai-pro-license)
+to plan an installation.
+
+## Install Veriqorn Community
+
+The deployment files, Docker Compose configuration, and installation notes live
+in [veriqorn-install](https://github.com/Veriqorn/veriqorn-install). Start
+there to run Veriqorn Community with Docker.
+
+Full Quick Start: <https://veriqorn.vercel.app/docs/quick-start-installation>
+
+The guide covers configuration, preflight checks, first launch, production TLS,
+and updates.
 
 ## Verify locally
 
