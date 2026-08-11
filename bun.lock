@@ -10,6 +10,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@veriqorn/contracts": "workspace:*",
+        "@veriqorn/extension-sdk": "workspace:*",
         "adm-zip": "0.6.0",
         "bcrypt": "6.0.0",
         "cookie": "1.1.1",
