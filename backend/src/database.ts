@@ -32,6 +32,19 @@ const ensureUuidExtension = async (dataSource: DataSource): Promise<void> => {
 };
 
 const baselineCurrentMigrations = async (dataSource: DataSource): Promise<void> => {
+  // `synchronize()` creates application tables on a fresh installation but
+  // deliberately does not create TypeORM's migration bookkeeping table.
+  // Create it before recording the synchronized schema as the migration
+  // baseline, otherwise an empty production database cannot start.
+  await dataSource.query(`
+    CREATE TABLE IF NOT EXISTS "migrations" (
+      "id" SERIAL NOT NULL,
+      "timestamp" bigint NOT NULL,
+      "name" character varying NOT NULL,
+      CONSTRAINT "PK_8c82d7f526340ab734260ea46be" PRIMARY KEY ("id")
+    )
+  `);
+
   const executor = new MigrationExecutor(dataSource);
   const executed = await executor.getExecutedMigrations();
   const executedNames = new Set(executed.map((migration) => migration.name));
