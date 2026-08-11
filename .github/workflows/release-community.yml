@@ -26,6 +26,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Require the canonical release train
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          RELEASE_TRAIN_URL: https://raw.githubusercontent.com/Veriqorn/veriqorn-install/master/releases/release-train.json
+        run: |
+          set -euo pipefail
+          version="${INPUT_VERSION:-${GITHUB_REF_NAME}}"
+          curl --fail-with-body --silent --show-error "$RELEASE_TRAIN_URL" > release-train.json
+          jq -e --arg version "$version" '.schemaVersion == 1 and .version == $version' release-train.json > /dev/null
+
       - name: Reject private implementation paths
         run: |
           forbidden=(

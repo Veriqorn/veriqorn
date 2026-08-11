@@ -1,6 +1,6 @@
 {
   "name": "@veriqorn/contracts",
-  "version": "0.1.0",
+  "version": "0.2.7",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",

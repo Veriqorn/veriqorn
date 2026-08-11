@@ -1,5 +1,6 @@
 {
   "name": "veriqorn",
+  "version": "0.2.7",
   "private": true,
   "description": "Apache-2.0 licensed Community Core for the Veriqorn quality intelligence platform.",
   "license": "Apache-2.0",
