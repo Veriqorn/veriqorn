@@ -201,6 +201,12 @@ export type VeriqornFrontendExtension = {
 /** Runtime bridge intentionally exposed by the Core frontend to same-origin extensions. */
 export type FrontendExtensionHost = {
   activeProjectId: string | null
+  /**
+   * The React module instance used by Core. Extensions must use this runtime
+   * rather than bundling a second React copy, so hooks remain valid when a
+   * contributed component is rendered by Core.
+   */
+  react: unknown
   api: {
     request<T>(path: string, init?: RequestInit): Promise<T>
   }

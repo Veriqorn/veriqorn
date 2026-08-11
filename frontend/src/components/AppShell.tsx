@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
+import * as ReactRuntime from 'react'
 import {
   Bot,
   ChevronLeft,
@@ -148,6 +149,7 @@ export function AppShell() {
   useEffect(() => {
     globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ = {
       activeProjectId: currentProjectId || null,
+      react: ReactRuntime,
       api: { request: apiClient.request },
       isProLicensed,
       user: user ? { id: user.id, name: user.name, role: user.role } : null,
