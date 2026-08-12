@@ -15,7 +15,7 @@ import {
   User,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -147,11 +147,6 @@ export function AppShell() {
   const isProLicensed = Boolean(capabilitiesQuery.data?.licensed) || hasStoredProConfig
   const routeProjectId = extractProjectIdFromPath(location.pathname)
   const currentProjectId = normalizeProjectId(routeProjectId ?? activeProjectId)
-  const currentProject = useMemo(
-    () => projects.find((project) => normalizeProjectId(project.id) === normalizeProjectId(currentProjectId)),
-    [currentProjectId, projects],
-  )
-
   // Extensions are rendered through AppShell's outlet.  The bridge must exist
   // during that same render: useEffect runs after child components and allowed
   // an extension route to call getFrontendExtensionHost() before this value was
