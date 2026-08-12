@@ -183,7 +183,7 @@ export function AppShell() {
   const selectableProjects = projects.filter((project) => !project.isArchived)
   const shellMeta = resolveShellMeta(location.pathname)
   const showExpandedContent = !isSidebarCollapsed || isMobileNavOpen
-  const appVersion = env.appVersion || 'dev'
+  const appVersion = (env.appVersion || 'dev').replace(/^v/i, '')
   const handleProjectChange = async (nextProjectId: string) => {
     const normalizedNextProjectId = normalizeProjectId(nextProjectId)
     setActiveProjectId(normalizedNextProjectId)
