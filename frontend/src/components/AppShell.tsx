@@ -146,16 +146,17 @@ export function AppShell() {
     [currentProjectId, projects],
   )
 
-  useEffect(() => {
-    globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ = {
-      activeProjectId: currentProjectId || null,
-      react: ReactRuntime,
-      api: { request: apiClient.request, requestRaw: apiClient.requestRaw },
-      isProLicensed,
-      user: user ? { id: user.id, name: user.name, role: user.role } : null,
-    }
-    return () => { delete globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ }
-  }, [apiClient.request, apiClient.requestRaw, currentProjectId, isProLicensed, user])
+  // Extensions are rendered through AppShell's outlet.  The bridge must exist
+  // during that same render: useEffect runs after child components and allowed
+  // an extension route to call getFrontendExtensionHost() before this value was
+  // installed.
+  globalThis.__VERIQORN_FRONTEND_EXTENSION_HOST__ = {
+    activeProjectId: currentProjectId || null,
+    react: ReactRuntime,
+    api: { request: apiClient.request, requestRaw: apiClient.requestRaw },
+    isProLicensed,
+    user: user ? { id: user.id, name: user.name, role: user.role } : null,
+  }
 
   useEffect(() => {
     if (routeProjectId && routeProjectId !== activeProjectId) {
