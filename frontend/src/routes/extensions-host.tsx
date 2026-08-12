@@ -36,14 +36,14 @@ function ExtensionsHostPage() {
   if (state.status === 'loading') return <div className="p-6 text-sm text-muted-foreground">Loading extension…</div>
   if (state.status === 'error') return <div className="p-6 text-sm text-destructive">Unable to load extension: {state.message}</div>
 
-  const route = routeContributions(state.extensions).find((candidate) => candidate.path.replace(/^\/+/, '') === path.replace(/^\/+/, ''))
+  const route = routeContributions(state.extensions).find((candidate) => candidate.route.path.replace(/^\/+/, '') === path.replace(/^\/+/, ''))
   if (!route) return <div className="p-6 text-sm text-muted-foreground">Extension page not found.</div>
 
   const hasStoredProConfig =
     licenseConfigQuery.data?.mode === 'pro_self_hosted' &&
     licenseConfigQuery.data?.hasStoredLicense === true
   const isProLicensed = Boolean(capabilitiesQuery.data?.licensed) || hasStoredProConfig
-  if (!isFrontendContributionEntitled(route.requiredEntitlement, isProLicensed)) {
+  if (!isFrontendContributionEntitled(route.route.requiredEntitlement, isProLicensed)) {
     return (
       <div className="p-6">
         <h1 className="text-lg font-semibold">Enterprise license required</h1>
@@ -54,6 +54,6 @@ function ExtensionsHostPage() {
     )
   }
 
-  const Component = route.component as ComponentType
+  const Component = route.route.component as ComponentType
   return <Component />
 }

@@ -171,7 +171,8 @@ export function AppShell() {
     return () => { active = false }
   }, [])
 
-  const visibleNavigation = sidebarNavigation.filter((item) => !item.requiresPro || isProLicensed)
+  const visibleNavigation = sidebarNavigation.filter((item) => item.id !== 'settings' && (!item.requiresPro || isProLicensed))
+  const settingsNavigation = sidebarNavigation.find((item) => item.id === 'settings')
   const visibleExtensionNavigation = navigationContributions(frontendExtensions)
     .filter((item) => isFrontendContributionEntitled(item.requiredEntitlement, isProLicensed))
   const selectableProjects = projects.filter((project) => !project.isArchived)
@@ -372,6 +373,23 @@ export function AppShell() {
                 {showExpandedContent ? <span>{item.label}</span> : null}
               </a>
             ))}
+            {settingsNavigation ? (
+              <Link
+                className={cn(
+                  'group flex items-center border border-transparent text-sm font-medium transition-all duration-200',
+                  showExpandedContent ? 'gap-3 rounded-[1rem] px-3 py-3' : 'mx-auto h-11 w-11 justify-center rounded-[1rem] px-0',
+                  location.pathname.startsWith('/settings')
+                    ? 'border-white/12 bg-white/14 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
+                    : 'text-sidebar-muted hover:border-white/10 hover:bg-white/8 hover:text-sidebar-foreground',
+                )}
+                search={{ section: 'general' }}
+                title={showExpandedContent ? undefined : settingsNavigation.label}
+                to="/settings"
+              >
+                <Settings className="h-4 w-4 shrink-0" />
+                {showExpandedContent ? <span>{settingsNavigation.label}</span> : null}
+              </Link>
+            ) : null}
           </div>
 
         </nav>
