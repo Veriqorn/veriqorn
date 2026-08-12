@@ -1736,7 +1736,7 @@ export const registerRoutes = (
     api.group("/ai", (ai) => {
       ai.get("/capabilities", async ({ request }) => {
         await requireUser(request, services);
-        return ok(request, await services.aiEdition.getCapabilities());
+        return ok(request, await services.entitlements.getAiCapabilities());
       });
 
       // Temporary legacy forwarders. They preserve supported payloads while

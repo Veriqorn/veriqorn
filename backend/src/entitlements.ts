@@ -5,8 +5,6 @@ import { productLicenseEnvelopeSchema, type ProductLicensePayload } from '@veriq
 
 import { HttpError } from './errors'
 
-import { AiEditionNativeService } from './legacy-v2-entitlements'
-
 import { type InstallationIdentitySettings, InstallationIdentityService } from './installation-identity'
 
 export type EntitlementId =
@@ -40,11 +38,6 @@ const aiFeatureByEntitlement: Record<string, 'analysis' | 'indexing' | 'retrieva
   'ai.connectors.grafana': 'grafanaConnector',
 }
 
-/**
- * Compatibility adapter used while the v2 AI license is migrated to the
- * product-wide v3 envelope. New call sites use entitlement IDs rather than
- * reaching into AI-specific feature tokens.
- */
 export class EntitlementService {
   constructor(
     private readonly installationIdentity: InstallationIdentityService,
@@ -52,39 +45,7 @@ export class EntitlementService {
   ) {}
 
   async snapshot(): Promise<EntitlementSnapshot> {
-    const productLicense = await this.evaluateProductLicense()
-    if (productLicense) return productLicense
-
-    // v2 compatibility stays isolated in a small adapter until the old
-    // issuance window ends. The generic license path above is the default.
-    const capabilities = await this.getV2Capabilities()
-    const status = capabilities.status === 'licensed'
-      ? 'active'
-      : capabilities.status === 'expired'
-        ? 'expired'
-        : capabilities.status === 'invalid'
-          ? 'invalid'
-          : 'not_configured'
-
-    const availability = (feature: keyof typeof capabilities.features): EntitlementAvailability => {
-      const current = capabilities.features[feature]
-      return {
-        enabled: current.enabled,
-        ...(current.enabled ? {} : { reason: status === 'expired' ? 'expired' as const : status === 'invalid' ? 'invalid_license' as const : 'not_entitled' as const }),
-      }
-    }
-
-    return {
-      status,
-      capabilities: {
-        'ai.analysis': availability('analysis'),
-        'ai.indexing': availability('indexing'),
-        'ai.rag': availability('retrieval'),
-        'ai.connectors.kibana': availability('kibanaConnector'),
-        'ai.connectors.sentry': availability('sentryConnector'),
-        'ai.connectors.grafana': availability('grafanaConnector'),
-      },
-    }
+    return await this.evaluateProductLicense() ?? { status: 'not_configured', capabilities: {} }
   }
 
   async has(id: EntitlementId): Promise<boolean> {
@@ -128,6 +89,36 @@ export class EntitlementService {
       installationPublicKey: legacy.publicKeyPem,
       installationKeyFingerprint: legacy.fingerprint,
       createdAt: legacy.createdAt,
+    }
+  }
+
+  async getAiCapabilities() {
+    const snapshot = await this.snapshot()
+    const raw = this.readLicenseFromFile() ?? await this.settings.get(PRODUCT_LICENSE_KEY)
+    const evaluation = raw ? await this.evaluateProductLicenseJson(raw) : undefined
+    const enabled = (id: string) => snapshot.capabilities[id]?.enabled === true
+    const licensed = snapshot.status === 'active'
+    const reason = licensed ? undefined : snapshot.status === 'expired' ? 'License expired.' : 'Enterprise license is not configured.'
+    return {
+      mode: licensed ? 'pro_self_hosted' : 'oss_stub',
+      status: licensed ? 'licensed' : snapshot.status === 'not_configured' ? 'stub' : snapshot.status,
+      licensed,
+      upgradeUrl: null,
+      message: licensed ? 'Veriqorn Enterprise license is active.' : reason,
+      features: {
+        analysis: { enabled: enabled('ai.analysis'), ...(enabled('ai.analysis') ? {} : { reason }) },
+        indexing: { enabled: enabled('ai.indexing'), ...(enabled('ai.indexing') ? {} : { reason }) },
+        retrieval: { enabled: enabled('ai.rag'), ...(enabled('ai.rag') ? {} : { reason }) },
+        kibanaConnector: { enabled: enabled('ai.connectors.kibana'), ...(enabled('ai.connectors.kibana') ? {} : { reason }) },
+        sentryConnector: { enabled: enabled('ai.connectors.sentry'), ...(enabled('ai.connectors.sentry') ? {} : { reason }) },
+        grafanaConnector: { enabled: enabled('ai.connectors.grafana'), ...(enabled('ai.connectors.grafana') ? {} : { reason }) },
+      },
+      license: evaluation?.payload ? {
+        licenseId: evaluation.payload.licenseId,
+        customer: evaluation.payload.customerName,
+        issuedAt: evaluation.payload.issuedAt,
+        expiresAt: evaluation.payload.expiresAt,
+      } : null,
     }
   }
 
@@ -185,10 +176,6 @@ export class EntitlementService {
       return { valid: false, status: 'invalid', message: 'Product license is issued for a different installation.' }
     }
     return { valid: true, status: 'active', message: 'Product license is active.', payload: envelope.data.payload }
-  }
-
-  private async getV2Capabilities() {
-    return new AiEditionNativeService(this.settings as never, this.installationIdentity).getCapabilities()
   }
 
   private extractLicenseJson(input: unknown): string | null {

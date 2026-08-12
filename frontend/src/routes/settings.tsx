@@ -796,10 +796,10 @@ function PlanCard({
             {licensed ? (
               <>
                 <Check className="h-3.5 w-3.5" />
-                AI Pro
+                Enterprise
               </>
             ) : (
-              'Core (Free)'
+              'Community'
             )}
           </Badge>
           <span className="text-sm text-muted-foreground">
@@ -807,7 +807,7 @@ function PlanCard({
               ? expiresAt
                 ? `License active, expires ${formatDate(expiresAt)}.`
                 : 'License active.'
-              : 'Running on the Core plan. Activate a license to enable AI Pro features.'}
+              : 'Running on Community. Activate an Enterprise license to enable Enterprise features.'}
           </span>
           {status !== 'stub' && status !== 'licensed' ? (
             <Badge variant="outline">status: {status}</Badge>
