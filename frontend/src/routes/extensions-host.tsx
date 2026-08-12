@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, useRouterState } from '@tanstack/react-router'
 import { useEffect, useState, type ComponentType } from 'react'
 
 import { isFrontendContributionEntitled, loadFrontendExtensions, routeContributions, type LoadedFrontendExtension } from '@/extensions/registry'
@@ -19,7 +19,7 @@ type LoadState =
   | { status: 'ready'; extensions: LoadedFrontendExtension[] }
 
 function ExtensionsHostPage() {
-  const { _splat: path = '' } = extensionsHostRoute.useParams() as { _splat?: string }
+  const pathname = useRouterState({ select: (state) => state.location.pathname })
   const { apiClient } = useRuntime()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const capabilitiesQuery = useQuery(getCapabilitiesQueryOptions(apiClient))
@@ -36,14 +36,20 @@ function ExtensionsHostPage() {
   if (state.status === 'loading') return <div className="p-6 text-sm text-muted-foreground">Loading extension…</div>
   if (state.status === 'error') return <div className="p-6 text-sm text-destructive">Unable to load extension: {state.message}</div>
 
-  const route = routeContributions(state.extensions).find((candidate) => candidate.route.path.replace(/^\/+/, '') === path.replace(/^\/+/, ''))
+  // Resolve from the browser pathname rather than TanStack's splat-param name.
+  // The param name differs between router versions, while extension paths are
+  // absolute and stable (for example, /extensions/ai/chat).
+  const path = pathname.replace(/^\/extensions\//, '').replace(/^\/+/, '')
+  const route = routeContributions(state.extensions).find(
+    (candidate) => candidate.path.replace(/^\/extensions\//, '').replace(/^\/+/, '') === path,
+  )
   if (!route) return <div className="p-6 text-sm text-muted-foreground">Extension page not found.</div>
 
   const hasStoredProConfig =
     licenseConfigQuery.data?.mode === 'pro_self_hosted' &&
     licenseConfigQuery.data?.hasStoredLicense === true
   const isProLicensed = Boolean(capabilitiesQuery.data?.licensed) || hasStoredProConfig
-  if (!isFrontendContributionEntitled(route.route.requiredEntitlement, isProLicensed)) {
+  if (!isFrontendContributionEntitled(route.requiredEntitlement, isProLicensed)) {
     return (
       <div className="p-6">
         <h1 className="text-lg font-semibold">Enterprise license required</h1>
@@ -54,6 +60,6 @@ function ExtensionsHostPage() {
     )
   }
 
-  const Component = route.route.component as ComponentType
+  const Component = route.component as ComponentType
   return <Component />
 }
