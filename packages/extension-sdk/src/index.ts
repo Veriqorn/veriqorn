@@ -152,6 +152,8 @@ export type FrontendNavigationContribution = {
   id: string
   label: string
   href: string
+  /** Icon understood by the Core sidebar for this contribution. */
+  icon?: 'bot' | 'shield'
   /** Open the contribution in the standalone Knowledge Base application. */
   external?: boolean
   requiredEntitlement?: string

@@ -11,6 +11,7 @@ import {
   Menu,
   Rocket,
   Settings,
+  Shield,
   User,
   X,
 } from 'lucide-react'
@@ -371,7 +372,7 @@ export function AppShell() {
                 key={`extension:${item.id}`}
                 title={showExpandedContent ? undefined : item.label}
               >
-                <Bot className="h-4 w-4 shrink-0" />
+                {item.icon === 'shield' ? <Shield className="h-4 w-4 shrink-0" /> : <Bot className="h-4 w-4 shrink-0" />}
                 {showExpandedContent ? <span>{item.label}</span> : null}
               </a>
             ))}
