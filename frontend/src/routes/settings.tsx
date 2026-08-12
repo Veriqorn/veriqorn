@@ -107,12 +107,26 @@ type ApiKeyRecord = {
 type ProjectUserAccessRecord = UserProjectAccess
 
 const sectionConfig: Record<SettingsSection, SectionConfig> = {
+  'ai-analysis': {
+    description: 'Configure the AI connection and evidence sources used for analysis.',
+    icon: Bot,
+    note: '',
+    state: 'live',
+    title: 'AI Analysis',
+  },
   'api-keys': {
     description: 'Create and manage API keys for programmatic access.',
     icon: KeyRound,
     note: '',
     state: 'live',
     title: 'API Keys',
+  },
+  'auto-indexing': {
+    description: 'Configure repository indexing, knowledge-base generation, and coverage evidence.',
+    icon: RefreshCw,
+    note: '',
+    state: 'live',
+    title: 'Auto-Indexing',
   },
   general: {
     description: 'Your account overview and current workspace settings.',
@@ -218,15 +232,9 @@ function SettingsPage() {
   })
 
   // AI capabilities
-  const aiCapabilitiesQuery = useQuery({
-    ...getCapabilitiesQueryOptions(apiClient),
-    enabled: search.section === 'general',
-  })
+  const aiCapabilitiesQuery = useQuery(getCapabilitiesQueryOptions(apiClient))
 
-  const aiLicenseConfigQuery = useQuery({
-    ...getAiLicenseConfigQueryOptions(apiClient),
-    enabled: search.section === 'general',
-  })
+  const aiLicenseConfigQuery = useQuery(getAiLicenseConfigQueryOptions(apiClient))
 
   // Rerun settings
   const rerunSettingsQuery = useQuery({
@@ -359,6 +367,7 @@ function SettingsPage() {
   const isProLicensed = Boolean(aiCapabilitiesQuery.data?.licensed) || hasStoredProConfig
   const extensionSettings = settingsContributions(frontendExtensions)
     .filter((contribution) => isFrontendContributionEntitled(contribution.requiredEntitlement, isProLicensed))
+  const selectedExtensionSettings = extensionSettings.filter((contribution) => contribution.section === search.section)
 
   return (
     <section className="grid gap-6 xl:grid-cols-[0.3fr_0.7fr]" data-testid="settings-shell">
@@ -394,6 +403,28 @@ function SettingsPage() {
                 >
                   <Icon className="h-4 w-4" />
                   {section.label}
+                </Link>
+              )
+            })}
+            {extensionSettings.map((contribution) => {
+              const section = contribution.section as SettingsSection | undefined
+              if (!section) return null
+              const Icon = sectionConfig[section].icon
+              const isActive = search.section === section
+
+              return (
+                <Link
+                  className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+                    isActive
+                      ? 'border-[rgb(var(--app-accent))] bg-[rgb(var(--app-accent))]/10 text-[rgb(var(--app-ink))]'
+                      : 'border-[rgb(var(--app-line))] bg-white/80 text-muted-foreground hover:border-[rgb(var(--app-accent))]/50 hover:text-[rgb(var(--app-ink))]'
+                  }`}
+                  key={contribution.id}
+                  search={{ section }}
+                  to="/settings"
+                >
+                  <Icon className="h-4 w-4" />
+                  {contribution.title}
                 </Link>
               )
             })}
@@ -485,7 +516,7 @@ function SettingsPage() {
           <PlatformUpdatesSection apiClient={apiClient} isAdmin={user?.role === 'admin'} />
         ) : null}
 
-        {extensionSettings.map((contribution) => {
+        {selectedExtensionSettings.map((contribution) => {
           const Component = contribution.component as ComponentType
           return <Component key={contribution.id} />
         })}

@@ -43,6 +43,7 @@ const readRuntimeValue = (...values) => {
 const buildRuntimeConfig = () => ({
   apiUrl: readRuntimeValue(Bun.env.VITE_API_URL, Bun.env.NEXT_PUBLIC_API_URL, 'http://localhost:3001'),
   appName: readRuntimeValue(Bun.env.VITE_APP_NAME, 'Veriqorn'),
+  appVersion: readRuntimeValue(Bun.env.PLATFORM_VERSION),
   kbUrl: readRuntimeValue(Bun.env.VITE_KB_URL, Bun.env.NEXT_PUBLIC_KB_URL, 'http://localhost:5174'),
 })
 

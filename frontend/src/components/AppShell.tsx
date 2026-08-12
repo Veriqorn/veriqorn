@@ -16,7 +16,6 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import frontendPackage from '../../package.json'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -184,7 +183,7 @@ export function AppShell() {
   const selectableProjects = projects.filter((project) => !project.isArchived)
   const shellMeta = resolveShellMeta(location.pathname)
   const showExpandedContent = !isSidebarCollapsed || isMobileNavOpen
-  const appVersion = frontendPackage.version
+  const appVersion = env.appVersion || 'dev'
   const handleProjectChange = async (nextProjectId: string) => {
     const normalizedNextProjectId = normalizeProjectId(nextProjectId)
     setActiveProjectId(normalizedNextProjectId)

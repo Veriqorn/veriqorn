@@ -100,6 +100,8 @@ export const settingsSectionSchema = z.enum([
   'rerun',
   'api-keys',
   'updates',
+  'ai-analysis',
+  'auto-indexing',
 ])
 
 export const settingsSearchSchema = z.object({

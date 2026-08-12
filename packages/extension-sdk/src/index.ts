@@ -163,6 +163,8 @@ export type FrontendNavigationContribution = {
 export type FrontendSettingsContribution = {
   id: string
   title: string
+  /** Settings route section selected when this contribution is opened. */
+  section?: string
   requiredEntitlement?: string
   order?: number
   /** Opaque React component rendered by the Core Settings slot. */

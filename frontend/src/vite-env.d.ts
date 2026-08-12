@@ -3,6 +3,7 @@
 interface ImportMetaEnv {
   readonly VITE_API_URL?: string
   readonly VITE_APP_NAME?: string
+  readonly VITE_APP_VERSION?: string
   readonly VITE_KB_URL?: string
 }
 
@@ -14,6 +15,7 @@ interface Window {
   __VERIQORN_RUNTIME_CONFIG__?: {
     apiUrl?: string
     appName?: string
+    appVersion?: string
     kbUrl?: string
   }
 }
