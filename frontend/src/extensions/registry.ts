@@ -75,7 +75,7 @@ export const loadFrontendExtensions = async (
 export const navigationContributions = (extensions: ReadonlyArray<LoadedFrontendExtension>): FrontendNavigationContribution[] =>
   extensions.flatMap((extension) => (extension.navigation ?? []).map((navigation) => ({ extension, navigation })))
     .map(({ extension, navigation }) => {
-      if (!navigation.href.startsWith('/extensions/')) {
+      if (!navigation.external && !navigation.href.startsWith('/extensions/')) {
         throw new Error(`Extension '${extension.manifest.id}' navigation must use the /extensions/ namespace`)
       }
       return navigation

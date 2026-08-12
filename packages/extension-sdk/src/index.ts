@@ -152,6 +152,8 @@ export type FrontendNavigationContribution = {
   id: string
   label: string
   href: string
+  /** Open the contribution in the standalone Knowledge Base application. */
+  external?: boolean
   requiredEntitlement?: string
   order?: number
 }

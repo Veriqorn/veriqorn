@@ -33,6 +33,7 @@ import { Separator } from '@/components/ui/separator'
 import { sidebarNavigation } from '@/features/navigation/navigation'
 import { isFrontendContributionEntitled, loadFrontendExtensions, navigationContributions, type LoadedFrontendExtension } from '@/extensions/registry'
 import { getAiLicenseConfigQueryOptions, getCapabilitiesQueryOptions } from '@/lib/queries'
+import { env } from '@/lib/env'
 import {
 
   buildProjectLaunchesPath,
@@ -366,7 +367,7 @@ export function AppShell() {
                     ? 'border-white/12 bg-white/14 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
                     : 'text-sidebar-muted hover:border-white/10 hover:bg-white/8 hover:text-sidebar-foreground',
                 )}
-                href={`${item.href}?projectId=${encodeURIComponent(currentProjectId)}`}
+                href={`${item.external ? `${env.kbUrl}${item.href}` : item.href}?projectId=${encodeURIComponent(currentProjectId)}`}
                 key={`extension:${item.id}`}
                 title={showExpandedContent ? undefined : item.label}
               >
