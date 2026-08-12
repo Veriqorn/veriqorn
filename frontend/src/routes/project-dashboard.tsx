@@ -27,6 +27,7 @@ import {
   queryKeys,
 } from '@/lib/queries'
 import { useRuntime } from '@/providers/runtime-provider'
+import { PageActions } from '@/providers/page-actions-provider'
 import { projectLayoutRoute } from '@/routes/project-layout'
 import { defaultDashboardSearch, validateDashboardSearch } from '@/router/search'
 import type {
@@ -726,9 +727,24 @@ function ProjectDashboardPage() {
             <p className="mt-1 text-sm text-[rgb(var(--app-muted))]">
               Configure which widgets appear on the dashboard, how large they are, and in what order they render.
             </p>
+            {dashboards.length > 0 ? (
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                {dashboards.map((dashboard) => (
+                  <button
+                    className={dashboard.id === activeDashboardId ? 'inline-flex items-center gap-2 rounded-full bg-[rgb(var(--app-accent))] px-4 py-2 text-sm font-medium text-white' : 'inline-flex items-center gap-2 rounded-full border border-[rgb(var(--app-line))] bg-white px-4 py-2 text-sm font-medium text-[rgb(var(--app-ink))] transition hover:border-[rgb(var(--app-accent))] hover:text-[rgb(var(--app-accent))]'}
+                    key={dashboard.id}
+                    onClick={() => setSelectedDashboardId(dashboard.id)}
+                    type="button"
+                  >
+                    {dashboard.name}
+                    {dashboard.isDefault ? <Star className="h-3.5 w-3.5" /> : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <PageActions><div className="flex flex-wrap items-center gap-2">
             <Button onClick={() => setFiltersOpen(true)} size="sm" variant="outline">
               <Filter className="h-4 w-4" />
               Filters
@@ -791,7 +807,7 @@ function ProjectDashboardPage() {
               <RefreshCcw className={search.refresh || metricsQuery.isFetching ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
               Refresh
             </Button>
-          </div>
+          </div></PageActions>
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-4">
@@ -890,7 +906,7 @@ function ProjectDashboardPage() {
         </Panel>
       ) : (
         <>
-          <section className="rounded-[28px] border border-[rgb(var(--app-line))] bg-white/90 p-5 shadow-[0_20px_55px_rgba(22,29,42,0.07)]">
+          <section className="hidden rounded-[28px] border border-[rgb(var(--app-line))] bg-white/90 p-5 shadow-[0_20px_55px_rgba(22,29,42,0.07)]">
             <div className="flex flex-wrap items-center gap-2">
               {dashboards.map((dashboard) => (
                 <button

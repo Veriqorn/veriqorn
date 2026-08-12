@@ -581,6 +581,7 @@ function PlatformUpdatesSection({ apiClient, isAdmin }: { apiClient: ApiClient; 
             <div className="rounded-xl border p-3"><p className="text-xs text-muted-foreground">Available</p><p className="font-medium">{status.latestVersion ?? 'No published release detected'}</p></div>
           </div>
           {!status.configured ? <Alert><AlertTitle>Updates are not configured</AlertTitle><AlertDescription>Set PLATFORM_UPDATE_AGENT_URL and PLATFORM_UPDATE_AGENT_TOKEN in the installation environment, then deploy the isolated update agent.</AlertDescription></Alert> : null}
+          {status.configured && !status.updateAvailable && status.latestVersion ? <Alert><AlertTitle>Up to date</AlertTitle><AlertDescription>This installation already has the latest available release.</AlertDescription></Alert> : null}
           {status.job ? <Alert><AlertTitle>Last update: {status.job.status}</AlertTitle><AlertDescription>{status.job.message ?? `Job ${status.job.id}`}</AlertDescription></Alert> : null}
           {feedback ? <Alert variant={feedback.tone === 'error' ? 'destructive' : 'default'}><AlertDescription>{feedback.value}</AlertDescription></Alert> : null}
           <div className="flex flex-wrap gap-3">

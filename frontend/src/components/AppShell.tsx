@@ -18,7 +18,6 @@ import {
 import { useEffect, useMemo, useState } from 'react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -56,6 +55,8 @@ const iconMap = {
   Rocket,
   Settings,
 } as const
+
+type ExtensionHeaderAction = { disabled?: boolean; id: string; label: string; primary?: boolean }
 
 const resolveShellMeta = (pathname: string) => {
   const scopedPath = stripProjectScopePrefix(pathname)
@@ -136,6 +137,7 @@ export function AppShell() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [frontendExtensions, setFrontendExtensions] = useState<LoadedFrontendExtension[]>([])
+  const [extensionHeaderActions, setExtensionHeaderActions] = useState<ExtensionHeaderAction[]>([])
 
   const capabilitiesQuery = useQuery(getCapabilitiesQueryOptions(apiClient))
   const licenseConfigQuery = useQuery(getAiLicenseConfigQueryOptions(apiClient))
@@ -175,6 +177,14 @@ export function AppShell() {
       .catch(() => { if (active) setFrontendExtensions([]) })
     return () => { active = false }
   }, [])
+
+  useEffect(() => {
+    const updateActions = (event: Event) => setExtensionHeaderActions((event as CustomEvent<{ actions?: ExtensionHeaderAction[] }>).detail?.actions ?? [])
+    window.addEventListener('veriqorn:header-actions', updateActions)
+    return () => window.removeEventListener('veriqorn:header-actions', updateActions)
+  }, [])
+
+  useEffect(() => { setExtensionHeaderActions([]) }, [location.pathname])
 
   const visibleNavigation = sidebarNavigation.filter((item) => item.id !== 'settings' && (!item.requiresPro || isProLicensed))
   const settingsNavigation = sidebarNavigation.find((item) => item.id === 'settings')
@@ -505,14 +515,21 @@ export function AppShell() {
 
               <PageActionsSlot
                 fallback={
-                  <>
-                    {currentProject ? (
-                      <Badge className="px-3 py-1" variant="outline">{currentProject.name}</Badge>
-                    ) : null}
-                    {isProLicensed ? (
-                      <Badge className="px-3 py-1" variant="success">AI Pro</Badge>
-                    ) : null}
-                  </>
+                  extensionHeaderActions.length > 0 ? (
+                    <>
+                      {extensionHeaderActions.map((action) => (
+                        <Button
+                          disabled={action.disabled}
+                          key={action.id}
+                          onClick={() => window.dispatchEvent(new CustomEvent('veriqorn:header-action', { detail: { id: action.id } }))}
+                          size="sm"
+                          variant={action.primary ? 'default' : 'outline'}
+                        >
+                          {action.label}
+                        </Button>
+                      ))}
+                    </>
+                  ) : null
                 }
               />
             </div>
