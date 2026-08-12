@@ -79,6 +79,9 @@ const resolveShellMeta = (pathname: string) => {
   if (pathname === '/profile') {
     return { eyebrow: null, title: 'Profile' }
   }
+  if (scopedPath === '/extensions/enterprise-ai/coverage') {
+    return { eyebrow: null, title: 'Coverage' }
+  }
   return { eyebrow: null, title: 'Veriqorn' }
 }
 
