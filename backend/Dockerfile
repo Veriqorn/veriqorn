@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.11-alpine AS deps
+FROM oven/bun:1.4.2-alpine AS deps
 WORKDIR /app
 
 # Refresh Alpine security packages included by the upstream Bun image before
@@ -18,7 +18,7 @@ COPY packages/contracts ./packages/contracts
 COPY packages/extension-sdk ./packages/extension-sdk
 RUN bun run --cwd packages/contracts build && bun run --cwd packages/extension-sdk build
 
-FROM oven/bun:1.3.11-alpine AS runner
+FROM oven/bun:1.4.2-alpine AS runner
 WORKDIR /app
 
 RUN apk upgrade --no-cache && apk add --no-cache git

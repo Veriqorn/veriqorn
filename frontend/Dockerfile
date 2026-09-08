@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.11-alpine AS deps
+FROM oven/bun:1.4.2-alpine AS deps
 WORKDIR /app
 
 COPY package.json bun.lock ./
@@ -19,7 +19,7 @@ RUN bun run --cwd packages/contracts build && bun run --cwd packages/extension-s
 WORKDIR /app/frontend
 RUN bun run build
 
-FROM oven/bun:1.3.11-alpine AS runner
+FROM oven/bun:1.4.2-alpine AS runner
 WORKDIR /app
 
 # Refresh Alpine security packages included by the upstream Bun image.

@@ -36,7 +36,7 @@ and updates.
 
 ## Verify locally
 
-Requires Bun 1.3.11.
+Requires Bun 1.4.2.
 
 ```sh
 bun install --frozen-lockfile
