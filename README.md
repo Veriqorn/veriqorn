@@ -26,8 +26,7 @@ to plan an installation.
 ## Install Veriqorn Community
 
 The deployment files, Docker Compose configuration, and installation notes live
-in [veriqorn-install](https://github.com/Veriqorn/veriqorn-install). Start
-there to run Veriqorn Community with Docker.
+in [`deploy/`](deploy). Use them to run Veriqorn Community with Docker.
 
 Full Quick Start: <https://veriqorn.vercel.app/docs/quick-start-installation>
 

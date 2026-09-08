@@ -39,8 +39,8 @@ cosign verify \
   ghcr.io/veriqorn/veriqorn-backend@sha256:<digest>
 ```
 
-The update agent in `veriqorn-install` uses the same identity policy. Do not
-change it for Community releases without a coordinated install release.
+The update agent in [`deploy/`](../deploy) uses the same identity policy. Do
+not change it for Community releases without a coordinated deployment release.
 
 ## Enterprise boundary
 

@@ -29,7 +29,7 @@ jobs:
       - name: Require the canonical release train
         env:
           INPUT_VERSION: ${{ inputs.version }}
-          RELEASE_TRAIN_URL: https://raw.githubusercontent.com/Veriqorn/veriqorn-install/master/releases/release-train.json
+          RELEASE_TRAIN_URL: https://raw.githubusercontent.com/Veriqorn/veriqorn/main/docs/releases/release-train.json
         run: |
           set -euo pipefail
           version="${INPUT_VERSION:-${GITHUB_REF_NAME}}"
