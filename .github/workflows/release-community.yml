@@ -99,10 +99,10 @@ jobs:
         include:
           - name: backend
             dockerfile: backend/Dockerfile
-            image: veriqorn-backend
+            image: veriqorn-community-backend
           - name: frontend
             dockerfile: frontend/Dockerfile
-            image: veriqorn-frontend
+            image: veriqorn-community-frontend
     steps:
       - uses: actions/checkout@v4
 

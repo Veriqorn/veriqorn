@@ -45,8 +45,8 @@ On Linux, use `./preflight.sh .env --production`.
 5. Optional but recommended before customer handoff: verify image access:
 
 ```bash
-docker pull ghcr.io/veriqorn/veriqorn-backend:latest
-docker pull ghcr.io/veriqorn/veriqorn-frontend:latest
+docker pull ghcr.io/veriqorn/veriqorn-community-backend:latest
+docker pull ghcr.io/veriqorn/veriqorn-community-frontend:latest
 ```
 
 If either command returns `unauthorized`, make the GHCR package public or run
@@ -175,8 +175,8 @@ local images:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\bundle-airgap.ps1 `
-  -BackendImage ghcr.io/veriqorn/veriqorn-backend@sha256:<digest> `
-  -FrontendImage ghcr.io/veriqorn/veriqorn-frontend@sha256:<digest> `
+  -BackendImage ghcr.io/veriqorn/veriqorn-community-backend@sha256:<digest> `
+  -FrontendImage ghcr.io/veriqorn/veriqorn-community-frontend@sha256:<digest> `
   -Version v0.2.28 `
   -OutputDirectory .\veriqorn-community-v0.2.28-airgap
 ```
@@ -281,8 +281,8 @@ For customer-facing install preflight, validation, and data-safety commands, see
 
 ## Images
 
-- `ghcr.io/veriqorn/veriqorn-backend`
-- `ghcr.io/veriqorn/veriqorn-frontend`
+- `ghcr.io/veriqorn/veriqorn-community-backend`
+- `ghcr.io/veriqorn/veriqorn-community-frontend`
 
 Available package versions are listed at `https://github.com/orgs/veriqorn/packages`.
 

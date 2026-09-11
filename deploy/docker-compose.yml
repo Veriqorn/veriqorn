@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: ${FRONTEND_IMAGE:-ghcr.io/veriqorn/veriqorn-frontend}:${PLATFORM_VERSION:-latest}
+    image: ${FRONTEND_IMAGE:-ghcr.io/veriqorn/veriqorn-community-frontend}:${PLATFORM_VERSION:-latest}
     restart: unless-stopped
     ports:
       - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
@@ -14,7 +14,7 @@ services:
       - backend
 
   backend:
-    image: ${BACKEND_IMAGE:-ghcr.io/veriqorn/veriqorn-backend}:${PLATFORM_VERSION:-latest}
+    image: ${BACKEND_IMAGE:-ghcr.io/veriqorn/veriqorn-community-backend}:${PLATFORM_VERSION:-latest}
     restart: unless-stopped
     ports:
       - "127.0.0.1:${BACKEND_PORT:-3001}:3001"
@@ -75,8 +75,8 @@ services:
       UPDATE_COMPOSE_ENV_FILES: ${UPDATE_COMPOSE_ENV_FILES:-/install/.env}
       UPDATE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-veriqorn}
       UPDATE_CURRENT_VERSION: ${PLATFORM_VERSION:-latest}
-      UPDATE_BACKEND_IMAGE: ${BACKEND_IMAGE:-ghcr.io/veriqorn/veriqorn-backend}
-      UPDATE_FRONTEND_IMAGE: ${FRONTEND_IMAGE:-ghcr.io/veriqorn/veriqorn-frontend}
+      UPDATE_BACKEND_IMAGE: ${BACKEND_IMAGE:-ghcr.io/veriqorn/veriqorn-community-backend}
+      UPDATE_FRONTEND_IMAGE: ${FRONTEND_IMAGE:-ghcr.io/veriqorn/veriqorn-community-frontend}
       UPDATE_BACKEND_IMAGE_ENV_KEY: ${UPDATE_BACKEND_IMAGE_ENV_KEY:-BACKEND_IMAGE}
       UPDATE_FRONTEND_IMAGE_ENV_KEY: ${UPDATE_FRONTEND_IMAGE_ENV_KEY:-FRONTEND_IMAGE}
       UPDATE_PIN_IMAGE_DIGESTS: ${UPDATE_PIN_IMAGE_DIGESTS:-false}

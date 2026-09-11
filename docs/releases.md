@@ -21,8 +21,8 @@ Create and push an annotated version tag from the reviewed commit. The
 `Release Community images` workflow first repeats the source, test, build, and
 container-boundary checks. Only after those checks pass does it publish:
 
-- `ghcr.io/veriqorn/veriqorn-backend:<version>`
-- `ghcr.io/veriqorn/veriqorn-frontend:<version>`
+- `ghcr.io/veriqorn/veriqorn-community-backend:<version>`
+- `ghcr.io/veriqorn/veriqorn-community-frontend:<version>`
 
 Stable tags also receive `:latest`. Each image gets BuildKit provenance, an
 SBOM, and a keyless Cosign signature.
@@ -36,7 +36,7 @@ workflow identity is pinned to the tagged public release workflow:
 cosign verify \
   --certificate-oidc-issuer https://token.actions.githubusercontent.com \
   --certificate-identity-regexp '^https://github\\.com/Veriqorn/veriqorn/\\.github/workflows/release-community\\.yml@refs/tags/v.*$' \
-  ghcr.io/veriqorn/veriqorn-backend@sha256:<digest>
+  ghcr.io/veriqorn/veriqorn-community-backend@sha256:<digest>
 ```
 
 The update agent in [`deploy/`](../deploy) uses the same identity policy. Do
