@@ -58,6 +58,19 @@ describe('extension manifest loader', () => {
     expect(extensions[0]?.manifest.id).toBe('sample')
   })
 
+  test('loads a UTF-8 BOM-prefixed manifest', async () => {
+    mkdirSync(tmpRoot, { recursive: true })
+    const modulePath = join(tmpRoot, 'bom-sample.mjs')
+    const manifestPath = join(tmpRoot, 'extensions.json')
+    writeFileSync(modulePath, `export const extension = { manifest: { id: 'sample', version: '1.0.0', sdkApiVersion: 1, requiresCore: '*' } };`)
+    writeFileSync(manifestPath, `\uFEFF${JSON.stringify({
+      schemaVersion: 1,
+      extensions: [{ id: 'sample', version: '1.0.0', module: './bom-sample.mjs', sdkApiVersion: 1, requiresCore: '*' }],
+    })}`)
+
+    await expect(loadBackendExtensions(configFor(manifestPath))).resolves.toHaveLength(1)
+  })
+
   test('rejects a module that escapes the configured extension root', async () => {
     mkdirSync(tmpRoot, { recursive: true })
     const manifestPath = join(tmpRoot, 'extensions.json')

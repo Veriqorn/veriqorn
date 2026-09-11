@@ -131,7 +131,9 @@ export const loadBackendExtensions = async (config: AppConfig): Promise<LoadedBa
 
   let parsed: unknown
   try {
-    parsed = JSON.parse(readFileSync(manifestPath, 'utf8'))
+    // Windows-authored JSON files may include a UTF-8 byte-order mark. Strip it
+    // before parsing so the packaged Community manifest remains portable.
+    parsed = JSON.parse(readFileSync(manifestPath, 'utf8').replace(/^\uFEFF/, ''))
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
     throw new Error(`Unable to read extension manifest '${manifestPath}': ${detail}`)
