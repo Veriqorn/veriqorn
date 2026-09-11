@@ -1,6 +1,6 @@
 {
   "name": "@veriqorn/extension-sdk",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
