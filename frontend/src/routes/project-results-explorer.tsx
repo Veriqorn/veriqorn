@@ -1105,6 +1105,9 @@ function ResultDetail({
             {result.allureId ? (
               <span className="rounded-full border border-[rgb(var(--app-line))] px-2 py-0.5 text-[10px] font-semibold text-[rgb(var(--app-muted))]">{result.allureId}</span>
             ) : null}
+            {result.labels?.some((label) => label.name === 'veriqorn.testCaseId.status' && label.value === 'conflict') ? (
+              <span className="rounded-full border border-red-300 bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700">Duplicate test ID</span>
+            ) : null}
           </div>
           {isUnstableResult(result) ? (
             <Button disabled={rerunBusy} onClick={() => onTriggerSingleRerun(result)} size="sm" type="button" variant="outline">

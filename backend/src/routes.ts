@@ -24,6 +24,8 @@ import {
   projectIdParamSchema,
   projectsListSearchSchema,
   runSchema,
+  reserveTestCaseIdRequestSchema,
+  testCaseIdRegistryStatusSchema,
   runIdParamSchema,
   runsListResponseSchema,
   sessionSchema,
@@ -1216,6 +1218,27 @@ export const registerRoutes = (
       projects.get("/:projectId/results/runs/:runId/attachments/:attachmentId", ({ params, request, set }) => {
         markLegacyRoute(set, "/:projectId/runs/:runId/attachments/:attachmentId");
         return getRunAttachment({ params, request });
+      });
+
+      projects.post("/:projectId/test-case-ids/reservations", async ({ params, request }) => {
+        const { projectId, user } = await requireProjectContext(request, services, params.projectId, ["owner", "maintainer"]);
+        const body = await readValidatedJsonBody(
+          request,
+          reserveTestCaseIdRequestSchema,
+          "TEST_CASE_ID_VALIDATION",
+          "Invalid test case ID reservation payload",
+        );
+        return ok(request, await services.testCaseIds.reserve(projectId, body.testIdentity, body.testName, user.sub));
+      });
+
+      projects.get("/:projectId/test-case-ids", async ({ params, request }) => {
+        const { projectId } = await requireProjectContext(request, services, params.projectId);
+        const status = new URL(request.url).searchParams.get("status");
+        const parsedStatus = status ? testCaseIdRegistryStatusSchema.safeParse(status) : undefined;
+        if (status && !parsedStatus?.success) {
+          throw new HttpError(400, "TEST_CASE_ID_VALIDATION", "Invalid test case ID status");
+        }
+        return ok(request, await services.testCaseIds.list(projectId, parsedStatus?.data));
       });
 
       projects.group("/:projectId/imports", (imports) => {

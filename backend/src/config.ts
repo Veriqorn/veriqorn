@@ -23,6 +23,7 @@ import { ChatConversation } from "./entities/chat-conversation.entity";
 import { ChatMessage } from "./entities/chat-message.entity";
 import { TestRerunJob } from "./entities/test-rerun-job.entity";
 import { TestRerunJobItem } from "./entities/test-rerun-job-item.entity";
+import { TestCaseIdRegistry } from "./entities/test-case-id-registry.entity";
 
 export type AppConfig = {
   port: number;
@@ -78,6 +79,7 @@ const entities = [
   ChatMessage,
   TestRerunJob,
   TestRerunJobItem,
+  TestCaseIdRegistry,
 ];
 
 const parseBoolean = (value: string | undefined, defaultValue: boolean): boolean => {

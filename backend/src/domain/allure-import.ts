@@ -6,6 +6,8 @@ import { TestResult } from "../entities/test-result.entity";
 import { TestStep } from "../entities/test-step.entity";
 import { TestAttachment } from "../entities/test-attachment.entity";
 import { TestRun } from "../entities/test-run.entity";
+import { isNumericTestCaseId, type TestCaseIdRegistryService } from "./test-case-id-registry";
+import { resolveAllureId } from "./test-results-helpers";
 import type { MinioStorageService } from "../services";
 
 type IngestionDiagnostics = {
@@ -55,7 +57,18 @@ export class AllureImportService {
     private testRunRepository: Repository<TestRun>,
     private dataSource: DataSource,
     private readonly minioService?: MinioStorageService,
+    private readonly testCaseIds?: TestCaseIdRegistryService,
   ) {}
+
+  private resolveTestIdentity(resultData: Record<string, unknown>): string {
+    const labels = this.normalizeResultLabels(resultData.labels);
+    const explicit = labels.find((label) => label.name.trim().toLowerCase() === "veriqorn.test.identity")?.value.trim();
+    if (explicit) return explicit;
+    for (const candidate of [resultData.historyId, resultData.fullName, resultData.name]) {
+      if (typeof candidate === "string" && candidate.trim()) return candidate.trim();
+    }
+    return "unnamed-test";
+  }
 
   private normalizeDiagnostics(
     diagnostics?: IngestionDiagnostics,
@@ -829,6 +842,21 @@ export class AllureImportService {
               name: "testCaseId",
               value: String(resultData.testCaseId),
             });
+          }
+          const projectId = testRun.projectId || "default";
+          const testCaseId = resolveAllureId(testResultData.labels, resultData.parameters);
+          if (testCaseId && isNumericTestCaseId(testCaseId) && this.testCaseIds) {
+            const observation = await this.testCaseIds.observe(
+              projectId,
+              testCaseId,
+              this.resolveTestIdentity(resultData),
+              typeof resultData.name === "string" ? resultData.name : undefined,
+            );
+            testResultData.labels.push({ name: "veriqorn.testCaseId.status", value: observation.status });
+            if (observation.status === "conflict") {
+              testResultData.labels.push({ name: "veriqorn.testCaseId.owner", value: observation.ownerIdentity });
+              console.warn(`Duplicate test case ID ${testCaseId} in project ${projectId}`);
+            }
           }
 
           // Create the entity

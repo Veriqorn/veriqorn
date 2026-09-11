@@ -29,6 +29,8 @@ import { assertSafeOutboundUrl } from "./outbound";
 import { McpService } from "./domain/mcp";
 import { TestRerunJob } from "./entities/test-rerun-job.entity";
 import { TestRerunJobItem } from "./entities/test-rerun-job-item.entity";
+import { TestCaseIdRegistry } from "./entities/test-case-id-registry.entity";
+import { TestCaseIdRegistryService } from "./domain/test-case-id-registry";
 import type { AppConfig } from "./config";
 import { EntitlementService } from "./entitlements";
 import { InstallationIdentityService } from "./installation-identity";
@@ -2258,6 +2260,7 @@ export type AppServices = {
   runs: RunsService;
   dashboard: DashboardService;
   testResultsQuery: LegacyTestResultsQueryService;
+  testCaseIds: TestCaseIdRegistryService;
 
   minio: MinioStorageService;
   allureImport: LegacyAllureImportService;
@@ -2291,6 +2294,8 @@ export const createServices = async (config: AppConfig, dataSource: DataSource):
   const testStepRepository = dataSource.getRepository(TestStep);
   const testAttachmentRepository = dataSource.getRepository(TestAttachment);
   const settingsRepository = dataSource.getRepository(Settings);
+  const testCaseIdRegistryRepository = dataSource.getRepository(TestCaseIdRegistry);
+  const testCaseIds = new TestCaseIdRegistryService(testCaseIdRegistryRepository, dataSource);
 
   const projects = new LegacyProjectsService(projectRepository as any, dataSource as any);
   const projectAccess = new LegacyProjectAccessService(
@@ -2309,6 +2314,7 @@ export const createServices = async (config: AppConfig, dataSource: DataSource):
     testRunRepository as any,
     dataSource as any,
     minio as any,
+    testCaseIds,
   );
 
   const notificationDeliveryRepository = dataSource.getRepository(NotificationDelivery);
@@ -2339,6 +2345,7 @@ export const createServices = async (config: AppConfig, dataSource: DataSource):
     runs: new RunsService(testRunRepository, testResultRepository, projects, notificationsSvc),
     dashboard: new DashboardService(new SettingsStore(settingsRepository), dataSource),
     testResultsQuery: new LegacyTestResultsQueryService(dataSource as any),
+    testCaseIds,
     minio,
     allureImport,
     uploadOrchestration: new LegacyUploadOrchestrationService(allureImport as any),
