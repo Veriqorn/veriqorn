@@ -73,12 +73,12 @@ jobs:
 
       - name: Build Community images
         run: |
-          docker build -f backend/Dockerfile -t veriqorn-community-backend:ci .
-          docker build -f frontend/Dockerfile -t veriqorn-community-frontend:ci .
+          docker build -f backend/Dockerfile -t veriqorn-backend:ci .
+          docker build -f frontend/Dockerfile -t veriqorn-frontend:ci .
 
       - name: Inspect Community backend image boundary
         run: |
-          docker run --rm --entrypoint sh veriqorn-community-backend:ci -c '
+          docker run --rm --entrypoint sh veriqorn-backend:ci -c '
             test ! -e /app/backend/src/enterprise-staging &&
             test ! -e /app/backend/extensions/enterprise-ai.manifest.json &&
             test ! -e /app/backend/uploads &&
@@ -87,6 +87,6 @@ jobs:
 
       - name: Inspect Community frontend image boundary
         run: |
-          docker run --rm --entrypoint sh veriqorn-community-frontend:ci -c '
+          docker run --rm --entrypoint sh veriqorn-frontend:ci -c '
             test ! -e /app/dist/extensions/enterprise-ai
           '

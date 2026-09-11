@@ -8,8 +8,8 @@ compose install path from `latest` passed the fresh-volume smoke.
 Verify image access from the target environment:
 
 ```bash
-docker pull ghcr.io/veriqorn/veriqorn-community-backend:latest
-docker pull ghcr.io/veriqorn/veriqorn-community-frontend:latest
+docker pull ghcr.io/veriqorn/veriqorn-backend:latest
+docker pull ghcr.io/veriqorn/veriqorn-frontend:latest
 ```
 
 Both commands must succeed before customer handoff. If either returns

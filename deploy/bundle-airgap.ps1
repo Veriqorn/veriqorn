@@ -51,8 +51,8 @@ foreach ($file in @('docker-compose.yml', 'compose.enterprise.yml', '.env.exampl
   }
 }
 
-$backendTar = Join-Path $imagesDirectory 'veriqorn-community-backend.tar'
-$frontendTar = Join-Path $imagesDirectory 'veriqorn-community-frontend.tar'
+$backendTar = Join-Path $imagesDirectory 'veriqorn-backend.tar'
+$frontendTar = Join-Path $imagesDirectory 'veriqorn-frontend.tar'
 & docker save --output $backendTar $BackendImage
 if ($LASTEXITCODE -ne 0) { throw "Failed to export $BackendImage" }
 & docker save --output $frontendTar $FrontendImage
@@ -63,13 +63,13 @@ $images = @(
     role = 'community-backend'
     reference = $BackendImage
     immutableDigest = $backendDigest
-    archive = 'images/veriqorn-community-backend.tar'
+    archive = 'images/veriqorn-backend.tar'
   },
   [ordered]@{
     role = 'community-frontend'
     reference = $FrontendImage
     immutableDigest = $frontendDigest
-    archive = 'images/veriqorn-community-frontend.tar'
+    archive = 'images/veriqorn-frontend.tar'
   }
 )
 

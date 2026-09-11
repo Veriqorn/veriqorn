@@ -15,8 +15,8 @@ const composeEnvFiles = (process.env.UPDATE_COMPOSE_ENV_FILES || envFile)
   .map((value) => value.trim())
   .filter(Boolean);
 const projectName = process.env.UPDATE_PROJECT_NAME || 'veriqorn';
-const backendImage = process.env.UPDATE_BACKEND_IMAGE || 'ghcr.io/veriqorn/veriqorn-community-backend';
-const frontendImage = process.env.UPDATE_FRONTEND_IMAGE || 'ghcr.io/veriqorn/veriqorn-community-frontend';
+const backendImage = process.env.UPDATE_BACKEND_IMAGE || 'ghcr.io/veriqorn/veriqorn-backend';
+const frontendImage = process.env.UPDATE_FRONTEND_IMAGE || 'ghcr.io/veriqorn/veriqorn-frontend';
 const backendImageEnvKey = process.env.UPDATE_BACKEND_IMAGE_ENV_KEY || 'BACKEND_IMAGE';
 const frontendImageEnvKey = process.env.UPDATE_FRONTEND_IMAGE_ENV_KEY || 'FRONTEND_IMAGE';
 const pinImageDigests = process.env.UPDATE_PIN_IMAGE_DIGESTS === 'true';

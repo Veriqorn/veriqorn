@@ -77,15 +77,15 @@ jobs:
 
       - name: Build and inspect Community images
         run: |
-          docker build -f backend/Dockerfile -t veriqorn-community-backend:verify .
-          docker build -f frontend/Dockerfile -t veriqorn-community-frontend:verify .
-          docker run --rm --entrypoint sh veriqorn-community-backend:verify -c '
+          docker build -f backend/Dockerfile -t veriqorn-backend:verify .
+          docker build -f frontend/Dockerfile -t veriqorn-frontend:verify .
+          docker run --rm --entrypoint sh veriqorn-backend:verify -c '
             test ! -e /app/backend/src/enterprise-staging &&
             test ! -e /app/backend/extensions/enterprise-ai.manifest.json &&
             test ! -e /app/backend/uploads &&
             test -f /app/backend/extensions/manifest.json
           '
-          docker run --rm --entrypoint sh veriqorn-community-frontend:verify -c '
+          docker run --rm --entrypoint sh veriqorn-frontend:verify -c '
             test ! -e /app/dist/extensions/enterprise-ai
           '
 
@@ -99,10 +99,10 @@ jobs:
         include:
           - name: backend
             dockerfile: backend/Dockerfile
-            image: veriqorn-community-backend
+            image: veriqorn-backend
           - name: frontend
             dockerfile: frontend/Dockerfile
-            image: veriqorn-community-frontend
+            image: veriqorn-frontend
     steps:
       - uses: actions/checkout@v4
 
