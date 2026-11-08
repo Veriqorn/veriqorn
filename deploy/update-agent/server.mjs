@@ -1,7 +1,8 @@
 import { timingSafeEqual } from 'node:crypto';
 import { createServer } from 'node:http';
-import { appendFile, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { appendFile, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { persistEnvValues, signatureVerificationArgs, redactErrorMessage } from './update-helpers.mjs';
 
 const port = Number(process.env.PORT || 8787);
 const token = process.env.UPDATE_AGENT_TOKEN || '';
@@ -88,19 +89,9 @@ const installedVersion = async () => {
   const env = await readFile(envFile, 'utf8');
   return env.match(/^PLATFORM_VERSION=(.+)$/m)?.[1]?.trim() || process.env.UPDATE_CURRENT_VERSION || 'unknown';
 };
-const updateEnvValues = async (values) => {
-  const current = await readFile(envFile, 'utf8');
-  let next = current;
-  for (const [key, value] of Object.entries(values)) {
-    const line = `${key}=${value}`;
-    const pattern = new RegExp(`^${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=.*$`, 'm');
-    next = pattern.test(next) ? next.replace(pattern, line) : `${next.replace(/\s*$/, '\n')}${line}\n`;
-  }
-  await writeFile(`${envFile}.next`, next, { mode: 0o600 });
-  await rename(`${envFile}.next`, envFile);
-};
+const updateEnvValues = (values) => persistEnvValues(envFile, values);
 const record = async (job) => appendFile(stateFile, `${JSON.stringify({ ...job, recordedAt: new Date().toISOString() })}\n`, { mode: 0o600 });
-const safeMessage = (error) => String(error instanceof Error ? error.message : error).replace(/Bearer\s+\S+/gi, 'Bearer [redacted]').slice(0, 1000);
+const safeMessage = (error) => redactErrorMessage(error, [token, registryToken]);
 const waitForBackend = async () => {
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
@@ -127,12 +118,9 @@ const imageDigest = async (image) => {
   if (!result.includes('@sha256:')) throw new Error(`No immutable digest found for ${image}.`);
   return result;
 };
-const verifyImageSignature = async (image) => run([
-  'run', '--rm', cosignImage, 'verify',
-  '--certificate-identity-regexp', `^${cosignIdentity.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\\\*/g, '.*')}$`,
-  '--certificate-oidc-issuer', 'https://token.actions.githubusercontent.com',
-  image,
-]);
+const verifyImageSignature = async (image) => run(signatureVerificationArgs({
+  cosignImage, cosignIdentity, image, registryUsername, registryToken,
+}));
 const execute = async (job) => {
   let dockerConfigDirectory = null;
   try {

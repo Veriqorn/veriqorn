@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build:packages": "bun run --cwd packages/contracts build && bun run --cwd packages/extension-sdk build",
-    "check": "bun run build:packages && bun run check:backend && bun run check:frontend && bun run check:packages",
+    "check": "bun run test:update-agent && bun run build:packages && bun run check:backend && bun run check:frontend && bun run check:packages",
     "check:frontend": "bun run --cwd frontend check",
     "check:packages": "bun run typecheck:contracts && bun run typecheck:extension-sdk",
     "test:backend": "bun run --cwd backend test",
@@ -29,7 +29,8 @@
     "typecheck:contracts": "bun run --cwd packages/contracts typecheck",
     "typecheck:extension-sdk": "bun run --cwd packages/extension-sdk typecheck",
     "audit": "bun audit",
-    "check:backend": "bun run --cwd backend check"
+    "check:backend": "bun run --cwd backend check",
+    "test:update-agent": "node --test deploy/update-agent/test/update-helpers.test.mjs"
   },
   "patchedDependencies": {
     "minio@8.0.7": "patches/minio@8.0.7.patch"
