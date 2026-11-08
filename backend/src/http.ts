@@ -1,7 +1,7 @@
 import { mkdirSync, existsSync } from "fs";
 import { isAbsolute, join, relative, resolve } from "path";
 import { randomUUID } from "crypto";
-import { serialize, parse } from "cookie";
+import { stringifySetCookie, parseCookie } from "cookie";
 
 import type { AppConfig } from "./config";
 import { HttpError } from "./errors";
@@ -136,17 +136,21 @@ export const getSecurityHeaders = (config: AppConfig): Record<string, string> =>
 });
 
 export const buildAuthCookie = (token: string, config: AppConfig): string =>
-  serialize("auth_token", token, {
+  stringifySetCookie({
+    name: "auth_token",
+    value: token,
     httpOnly: true,
     secure: config.secureCookies,
     sameSite: "lax",
     maxAge: 60 * 60 * 24,
     path: "/",
     domain: config.cookieDomain,
-  });
+  }, { encode: encodeURIComponent });
 
 export const buildClearAuthCookie = (config: AppConfig): string =>
-  serialize("auth_token", "", {
+  stringifySetCookie({
+    name: "auth_token",
+    value: "",
     httpOnly: true,
     secure: config.secureCookies,
     sameSite: "lax",
@@ -154,7 +158,7 @@ export const buildClearAuthCookie = (config: AppConfig): string =>
     expires: new Date(0),
     path: "/",
     domain: config.cookieDomain,
-  });
+  }, { encode: encodeURIComponent });
 
 export const readAuthToken = (request: Request): string | null => {
   const header = request.headers.get("authorization");
@@ -167,7 +171,7 @@ export const readAuthToken = (request: Request): string | null => {
     return null;
   }
 
-  return parse(cookieHeader).auth_token || null;
+  return parseCookie(cookieHeader).auth_token || null;
 };
 
 export const ensureDirectory = (directoryPath: string): void => {

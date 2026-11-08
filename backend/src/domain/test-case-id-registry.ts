@@ -55,7 +55,6 @@ export class TestCaseIdRegistryService {
         if (!occupied) throw error;
       }
     }
-    throw new Error("Unable to reserve a test case ID");
   }
 
   async observe(projectId: string, testCaseId: string, testIdentity: string, testName?: string): Promise<TestCaseIdObservation> {

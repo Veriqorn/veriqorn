@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
   [string]$LegacyDirectory,
-  [string]$Version = 'v0.2.33'
+  [string]$Version = 'v0.2.34'
 )
 
 $ErrorActionPreference = 'Stop'

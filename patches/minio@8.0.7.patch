@@ -1,0 +1,143 @@
+diff --git a/dist/esm/helpers.mjs b/dist/esm/helpers.mjs
+index edac39c3021fe1596e4aa2453fb5a9073a48792a..8e547bc6d53b0620d22e619da308c2cc8ecdcf4a 100644
+--- a/dist/esm/helpers.mjs
++++ b/dist/esm/helpers.mjs
+@@ -1,6 +1,6 @@
+ import * as fs from "fs";
+ import * as path from "path";
+-import * as querystring from 'query-string';
++import querystring from 'query-string';
+ import * as errors from "./errors.mjs";
+ import { getEncryptionHeaders, isEmpty, isEmptyObject, isNumber, isObject, isString, isValidBucketName, isValidObjectName } from "./internal/helper.mjs";
+ import { RETENTION_MODES } from "./internal/type.mjs";
+diff --git a/dist/esm/internal/client.mjs b/dist/esm/internal/client.mjs
+index e9f96697e7156a43c46a35dd446c0b50501fbcdc..17c4c8dacef4093527049eaa9da315a155deab12 100644
+--- a/dist/esm/internal/client.mjs
++++ b/dist/esm/internal/client.mjs
+@@ -8,7 +8,7 @@ import * as async from 'async';
+ import BlockStream2 from 'block-stream2';
+ import { isBrowser } from 'browser-or-node';
+ import _ from 'lodash';
+-import * as qs from 'query-string';
++import qs from 'query-string';
+ import xml2js from 'xml2js';
+ import { CredentialProvider } from "../CredentialProvider.mjs";
+ import * as errors from "../errors.mjs";
+diff --git a/dist/esm/notification.mjs b/dist/esm/notification.mjs
+index 2fe075b73a9f98ece945993ebc151f601e0d52ee..a07da8dd97b79a6e5c3e2bed4f840006679a5a95 100644
+--- a/dist/esm/notification.mjs
++++ b/dist/esm/notification.mjs
+@@ -15,7 +15,7 @@
+  */
+ 
+ import { EventEmitter } from 'eventemitter3';
+-import jsonLineParser from 'stream-json/jsonl/Parser.js';
++import jsonLineParser from 'stream-json/jsonl/parser.js';
+ import { DEFAULT_REGION } from "./helpers.mjs";
+ import { pipesetup, uriEscape } from "./internal/helper.mjs";
+ 
+@@ -176,7 +176,7 @@ export class NotificationPoller extends EventEmitter {
+       bucketName: this.bucketName,
+       query
+     }, '', [200], region).then(response => {
+-      const asm = jsonLineParser.make();
++      const asm = jsonLineParser.asStream();
+       pipesetup(response, asm).on('data', data => {
+         // Data is flushed periodically (every 5 seconds), so we should
+         // handle it after flushing from the JSON parser.
+diff --git a/dist/main/helpers.js b/dist/main/helpers.js
+index bea5b04b15cd8497e00421aa6aa1767fc73641db..d19b46c45be1d72cfa17ff03d3a195255b1abe70 100644
+--- a/dist/main/helpers.js
++++ b/dist/main/helpers.js
+@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
+ exports.removeDirAndFiles = removeDirAndFiles;
+ var fs = _interopRequireWildcard(require("fs"), true);
+ var path = _interopRequireWildcard(require("path"), true);
+-var querystring = _interopRequireWildcard(require("query-string"), true);
++var querystring = require("query-string").default;
+ var errors = _interopRequireWildcard(require("./errors.js"), true);
+ var _helper = require("./internal/helper.js");
+ var _type = require("./internal/type.js");
+diff --git a/dist/main/internal/client.js b/dist/main/internal/client.js
+index 5ab16ff7ddd5985cddc0904b8ec6540a7ee27834..306b58683d94f4c5ed81e9187b3b5b4505abee0b 100644
+--- a/dist/main/internal/client.js
++++ b/dist/main/internal/client.js
+@@ -13,7 +13,7 @@ var async = _interopRequireWildcard(require("async"), true);
+ var _blockStream = require("block-stream2");
+ var _browserOrNode = require("browser-or-node");
+ var _lodash = require("lodash");
+-var qs = _interopRequireWildcard(require("query-string"), true);
++var qs = require("query-string").default;
+ var _xml2js = require("xml2js");
+ var _CredentialProvider = require("../CredentialProvider.js");
+ var errors = _interopRequireWildcard(require("../errors.js"), true);
+diff --git a/dist/main/notification.js b/dist/main/notification.js
+index 8d8e8b389bc313de072c603b302e4c39d373d345..b236da9e372f7d3a96215f73a2367563adb35f42 100644
+--- a/dist/main/notification.js
++++ b/dist/main/notification.js
+@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
+   value: true
+ });
+ var _eventemitter = require("eventemitter3");
+-var _Parser = require("stream-json/jsonl/Parser.js");
++var _Parser = require("stream-json/jsonl/parser.js");
+ var _helpers = require("./helpers.js");
+ var _helper = require("./internal/helper.js");
+ /*
+@@ -196,7 +196,7 @@ class NotificationPoller extends _eventemitter.EventEmitter {
+       bucketName: this.bucketName,
+       query
+     }, '', [200], region).then(response => {
+-      const asm = _Parser.make();
++      const asm = _Parser.default.asStream();
+       (0, _helper.pipesetup)(response, asm).on('data', data => {
+         // Data is flushed periodically (every 5 seconds), so we should
+         // handle it after flushing from the JSON parser.
+diff --git a/src/helpers.ts b/src/helpers.ts
+index 40bec966563c17bcb0a2526d755f860243089b79..3642f83214f09f2d15ad8a885ddfa70f592562a2 100644
+--- a/src/helpers.ts
++++ b/src/helpers.ts
+@@ -1,7 +1,7 @@
+ import * as fs from 'node:fs'
+ import * as path from 'node:path'
+ 
+-import * as querystring from 'query-string'
++import querystring from 'query-string'
+ 
+ import * as errors from './errors.ts'
+ import {
+diff --git a/src/internal/client.ts b/src/internal/client.ts
+index 6785c6b90b12b521c7edd59337040c7b13048253..fc3f3a6f54e167731fd82a3fe0808d80af6754be 100644
+--- a/src/internal/client.ts
++++ b/src/internal/client.ts
+@@ -10,7 +10,7 @@ import * as async from 'async'
+ import BlockStream2 from 'block-stream2'
+ import { isBrowser } from 'browser-or-node'
+ import _ from 'lodash'
+-import * as qs from 'query-string'
++import qs from 'query-string'
+ import xml2js from 'xml2js'
+ 
+ import { CredentialProvider } from '../CredentialProvider.ts'
+diff --git a/src/notification.ts b/src/notification.ts
+index 64c24112d225a234d3b5acf06043020e9fe414af..782ef265f50751101d002b9148800495f992b85c 100644
+--- a/src/notification.ts
++++ b/src/notification.ts
+@@ -15,7 +15,7 @@
+  */
+ 
+ import { EventEmitter } from 'eventemitter3'
+-import jsonLineParser from 'stream-json/jsonl/Parser.js'
++import jsonLineParser from 'stream-json/jsonl/parser.js'
+ 
+ import { DEFAULT_REGION } from './helpers.ts'
+ import type { TypedClient } from './internal/client.ts'
+@@ -216,7 +216,7 @@ export class NotificationPoller extends EventEmitter<{
+ 
+     this.client.makeRequestAsync({ method, bucketName: this.bucketName, query }, '', [200], region).then(
+       (response) => {
+-        const asm = jsonLineParser.make()
++        const asm = jsonLineParser.asStream()
+ 
+         pipesetup(response, asm)
+           .on('data', (data) => {

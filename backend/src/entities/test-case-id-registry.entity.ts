@@ -46,9 +46,9 @@ export class TestCaseIdRegistry {
   @Column({ type: "timestamp", nullable: true })
   lastConflictAt?: Date | null;
 
-  @Column({ type: "timestamp", default: "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: "timestamp", default: "CURRENT_TIMESTAMP" })
+  @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   updatedAt: Date;
 }

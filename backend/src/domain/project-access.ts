@@ -30,7 +30,7 @@ export class ProjectAccessService {
     const resolvedProjectId = await this.projectsService.resolveProjectId(projectId);
     const members = await this.membershipRepository.find({
       where: { projectId: resolvedProjectId },
-      relations: ["user", "project"],
+      relations: { user: true, project: true },
       order: { createdAt: "ASC" },
     });
     return members.map((m) => ({
@@ -99,7 +99,7 @@ export class ProjectAccessService {
     const userIds = users.map((u) => u.id);
     const memberships = await this.membershipRepository.find({
       where: { userId: In(userIds) },
-      relations: ["project"],
+      relations: { project: true },
       order: { createdAt: "ASC" },
     });
 

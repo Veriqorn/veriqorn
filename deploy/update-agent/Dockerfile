@@ -1,6 +1,6 @@
-FROM node:20-alpine
+FROM node:26.13.0-alpine
 
-RUN apk add --no-cache docker-cli docker-cli-compose
+RUN apk upgrade --no-cache && apk add --no-cache docker-cli docker-cli-compose
 
 WORKDIR /app
 COPY server.mjs ./server.mjs

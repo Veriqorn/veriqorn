@@ -1,6 +1,6 @@
 {
   "name": "veriqorn-backend",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,23 +18,23 @@
   "dependencies": {
     "@veriqorn/contracts": "workspace:*",
     "@veriqorn/extension-sdk": "workspace:*",
-    "adm-zip": "0.6.0",
+    "adm-zip": "0.6.1",
     "bcrypt": "6.0.0",
-    "cookie": "1.1.1",
-    "dotenv": "17.4.2",
-    "elysia": "1.4.29",
-    "jose": "6.2.8",
+    "cookie": "2.0.2",
+    "dotenv": "18.0.9",
+    "elysia": "1.4.31",
+    "jose": "6.2.15",
     "minio": "8.0.7",
-    "pg": "8.22.0",
+    "pg": "8.23.1",
     "reflect-metadata": "0.2.2",
-    "typeorm": "0.3.31",
-    "zod": "4.4.3"
+    "typeorm": "1.1.2",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@types/bcrypt": "6.0.0",
-    "@types/node": "26.1.2",
-    "bun-types": "1.4.2",
-    "oxlint": "1.77.0",
+    "@types/node": "26.6.6",
+    "bun-types": "1.4.4",
+    "oxlint": "1.92.0",
     "typescript": "7.0.2"
   }
 }

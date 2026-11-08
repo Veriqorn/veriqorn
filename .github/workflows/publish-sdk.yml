@@ -21,11 +21,11 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 26.13.0
           registry-url: https://npm.pkg.github.com
           scope: '@veriqorn'
 

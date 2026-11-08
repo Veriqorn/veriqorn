@@ -1065,7 +1065,7 @@ export class AllureImportService {
       typeof testRunId === "string" ? parseInt(testRunId, 10) : testRunId;
     return this.testResultRepository.find({
       where: { testRun: { id: numericId } },
-      relations: ["steps", "attachments"],
+      relations: { steps: true, attachments: true },
       order: { startTime: "DESC" },
     });
   }
@@ -1078,12 +1078,10 @@ export class AllureImportService {
       typeof testRunId === "string" ? parseInt(testRunId, 10) : testRunId;
     const result = await this.testResultRepository.findOne({
       where: { id: resultId, testRun: { id: numericId } },
-      relations: [
-        "steps",
-        "attachments",
-        "steps.attachments",
-        "steps.childSteps",
-      ],
+      relations: {
+        steps: { attachments: true, childSteps: true },
+        attachments: true,
+      },
     });
 
     if (!result) {

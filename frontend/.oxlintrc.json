@@ -4,12 +4,21 @@
     "browser": true,
     "node": true
   },
-  "plugins": ["typescript", "react"],
+  "plugins": [
+    "typescript",
+    "react"
+  ],
   "categories": {
     "correctness": "error"
   },
   "rules": {
-    "react-hooks/rules-of-hooks": "error"
+    "react-hooks/rules-of-hooks": "error",
+    "react/set-state-in-effect": "warn",
+    "react/immutability": "warn"
   },
-  "ignorePatterns": ["dist", "coverage", "node_modules"]
+  "ignorePatterns": [
+    "dist",
+    "coverage",
+    "node_modules"
+  ]
 }

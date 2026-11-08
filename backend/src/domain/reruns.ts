@@ -439,7 +439,7 @@ export class RerunsService {
   }
 
   private async getJobScoped(jobId: string, scopedProjectId: string): Promise<TestRerunJob> {
-    const job = await this.jobRepo.findOne({ where: { id: jobId }, relations: ["items"] });
+    const job = await this.jobRepo.findOne({ where: { id: jobId }, relations: { items: true } });
     if (!job || job.projectId !== scopedProjectId) {
       throw new HttpError(404, "RERUN_NOT_FOUND", "Rerun job not found");
     }

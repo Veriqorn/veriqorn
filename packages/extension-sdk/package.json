@@ -1,6 +1,6 @@
 {
   "name": "@veriqorn/extension-sdk",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -11,12 +11,14 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
-    "typescript": "^7.0.0"
+    "typescript": "^7.0.2"
   }
 }

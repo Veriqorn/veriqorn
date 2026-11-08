@@ -13,5 +13,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    // Bound JSDOM startup parallelism on developer machines and CI runners.
+    maxWorkers: 2,
   },
 })

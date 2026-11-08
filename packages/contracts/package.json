@@ -1,6 +1,6 @@
 {
   "name": "@veriqorn/contracts",
-  "version": "0.2.33",
+  "version": "0.2.34",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -11,15 +11,17 @@
       "import": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "zod": "^4.3.6"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "typescript": "^7.0.0"
+    "typescript": "^7.0.2"
   }
 }

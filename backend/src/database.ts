@@ -46,13 +46,8 @@ const baselineCurrentMigrations = async (dataSource: DataSource): Promise<void> 
   `);
 
   const executor = new MigrationExecutor(dataSource);
-  const executed = await executor.getExecutedMigrations();
-  const executedNames = new Set(executed.map((migration) => migration.name));
-
-  for (const migration of await executor.getAllMigrations()) {
-    if (!executedNames.has(migration.name)) {
-      await executor.insertMigration(migration);
-    }
+  for (const migration of await executor.getPendingMigrations()) {
+    await executor.insertMigration(migration);
   }
 };
 

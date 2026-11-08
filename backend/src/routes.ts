@@ -167,20 +167,6 @@ const requireProjectContext = async (
   return { projectId: scopedProjectId, user };
 };
 
-const requireKbReadContext = async (
-  request: Request,
-  services: AppServices,
-  rawProjectId: string,
-): Promise<ProjectRouteContext> => {
-  const { projectId } = validateContract(
-    projectIdParamSchema,
-    { projectId: rawProjectId },
-    "PROJECT_VALIDATION",
-    "Invalid project id",
-  );
-  return requireProjectContext(request, services, projectId);
-};
-
 const assertPasswordPolicy = (password: string): void => {
   const classes = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((pattern) => pattern.test(password)).length;
   if (password.length < 12 || password.length > 128 || classes < 3) {

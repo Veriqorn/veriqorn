@@ -23,6 +23,22 @@ jobs:
   verify:
     name: Verify release boundary
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: dependency_test
+          POSTGRES_PASSWORD: dependency_test
+          POSTGRES_DB: dependency_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dependency_test -d dependency_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      VERIQORN_TEST_DATABASE_URL: postgresql://dependency_test:dependency_test@localhost:5432/dependency_test
     steps:
       - uses: actions/checkout@v4
 
@@ -68,11 +84,16 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26.13.0
 
       - name: Run Community source checks
         run: |
           bun install --frozen-lockfile
+          bun run audit
           bun run check
 
       - name: Build and inspect Community images
@@ -98,11 +119,11 @@ jobs:
 
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 26.13.0
           registry-url: https://npm.pkg.github.com
           scope: '@veriqorn'
 

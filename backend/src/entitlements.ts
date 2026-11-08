@@ -29,15 +29,6 @@ export type EntitlementSnapshot = {
 
 const PRODUCT_LICENSE_KEY = 'veriqornLicense'
 
-const aiFeatureByEntitlement: Record<string, 'analysis' | 'indexing' | 'retrieval' | 'kibanaConnector' | 'sentryConnector' | 'grafanaConnector'> = {
-  'ai.analysis': 'analysis',
-  'ai.indexing': 'indexing',
-  'ai.rag': 'retrieval',
-  'ai.connectors.kibana': 'kibanaConnector',
-  'ai.connectors.sentry': 'sentryConnector',
-  'ai.connectors.grafana': 'grafanaConnector',
-}
-
 export class EntitlementService {
   constructor(
     private readonly installationIdentity: InstallationIdentityService,

@@ -1,4 +1,4 @@
-import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import { createRootRouteWithContext, Link, Outlet, type ErrorComponentProps } from '@tanstack/react-router'
 import { AlertTriangle } from 'lucide-react'
 
 import { isApiError } from '@/lib/api'
@@ -14,7 +14,8 @@ function RootLayout() {
   return <Outlet />
 }
 
-function RootErrorState({ error }: { error: Error }) {
+function RootErrorState({ error }: ErrorComponentProps) {
+  const message = error instanceof Error ? error.message : typeof error === 'string' ? error : ''
   return (
     <div className="flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full max-w-xl rounded-[32px] border border-[rgb(var(--app-line))] bg-white/90 p-8 text-[rgb(var(--app-ink))] shadow-[0_32px_100px_rgba(22,29,42,0.14)]">
@@ -26,9 +27,9 @@ function RootErrorState({ error }: { error: Error }) {
         <p className="mt-3 text-sm leading-7 text-[rgb(var(--app-muted))]">
           {isApiError(error)
             ? `HTTP ${error.status} from ${error.url}`
-            : error.message || 'An unexpected error occurred. Please try reloading.'}
+            : message || 'An unexpected error occurred. Please try reloading.'}
         </p>
-        <pre className="mt-6 overflow-x-auto rounded-3xl bg-[rgb(var(--app-shell))] px-4 py-4 text-sm text-white/90">{error.message}</pre>
+        <pre className="mt-6 overflow-x-auto rounded-3xl bg-[rgb(var(--app-shell))] px-4 py-4 text-sm text-white/90">{message}</pre>
         <div className="mt-6 flex gap-3">
           <button
             className="rounded-full bg-[rgb(var(--app-accent))] px-4 py-2 text-sm font-medium text-white transition hover:bg-[rgb(var(--app-accent-strong))]"

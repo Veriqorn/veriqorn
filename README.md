@@ -35,7 +35,7 @@ and updates.
 
 ## Verify locally
 
-Requires Bun 1.4.2.
+Requires Bun 1.4.4 and Node.js 26 LTS (26.13.0 for development and CI).
 
 ```sh
 bun install --frozen-lockfile
@@ -56,3 +56,10 @@ Copyright 2026 Veriqorn contributors. Licensed under the
 
 Please do not report security vulnerabilities in public issues. See
 [SECURITY.md](SECURITY.md).
+
+Dependency verification includes MinIO API regressions and optional PostgreSQL
+integration tests. Set VERIQORN_TEST_DATABASE_URL to a PostgreSQL account with
+permission to create temporary databases to enable the latter; the suite drops
+its own randomly named databases afterwards. CI supplies an isolated service.
+See [the dependency audit](docs/dependency-audit-2026-11-08.md) for versions,
+compatibility notes and the MinIO patch.

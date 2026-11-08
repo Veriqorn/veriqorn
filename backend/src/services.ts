@@ -34,7 +34,7 @@ import { TestCaseIdRegistryService } from "./domain/test-case-id-registry";
 import type { AppConfig } from "./config";
 import { EntitlementService } from "./entitlements";
 import { InstallationIdentityService } from "./installation-identity";
-import { AiEditionNativeService, type AiCapabilitiesResponse } from "./legacy-v2-entitlements";
+import { AiEditionNativeService } from "./legacy-v2-entitlements";
 export { AiEditionNativeService, type AiCapabilitiesResponse } from "./legacy-v2-entitlements";
 import { ExtensionServiceRegistry } from "./extension-service-registry";
 import { HttpError } from "./errors";
@@ -886,7 +886,7 @@ class RunsService {
     return this.testResultRepository.find({
       where: { testRunId: run.id },
       order: { startTime: "DESC" },
-      relations: ["steps", "steps.childSteps", "steps.attachments", "steps.childSteps.attachments"],
+      relations: { steps: { attachments: true, childSteps: { attachments: true } } },
     });
   }
 }
@@ -2122,7 +2122,7 @@ export class ChatNativeService {
   async getConversation(id: number, userId: number): Promise<ChatConversation | null> {
     return this.convRepo.findOne({
       where: { id, userId },
-      relations: ["messages"],
+      relations: { messages: true },
       order: { messages: { createdAt: "ASC" } } as any,
     });
   }

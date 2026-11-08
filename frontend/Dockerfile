@@ -1,7 +1,8 @@
-FROM oven/bun:1.4.2-alpine AS deps
+FROM oven/bun:1.4.4-alpine AS deps
 WORKDIR /app
 
 COPY package.json bun.lock ./
+COPY patches ./patches
 COPY backend/package.json ./backend/package.json
 COPY frontend/package.json ./frontend/package.json
 COPY packages/contracts/package.json ./packages/contracts/package.json
@@ -19,7 +20,7 @@ RUN bun run --cwd packages/contracts build && bun run --cwd packages/extension-s
 WORKDIR /app/frontend
 RUN bun run build
 
-FROM oven/bun:1.4.2-alpine AS runner
+FROM oven/bun:1.4.4-alpine AS runner
 WORKDIR /app
 
 # Refresh Alpine security packages included by the upstream Bun image.
