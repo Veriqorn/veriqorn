@@ -1,7 +1,8 @@
-import { Bell, FolderKanban, KeyRound, RefreshCw, Settings, Users, Upload } from 'lucide-react'
+import { Database, Bell, FolderKanban, KeyRound, RefreshCw, Settings, Users, Upload } from 'lucide-react'
 
 export const settingsSections = [
   { id: 'general', label: 'General', icon: Settings },
+  { id: 'storage', label: 'Storage', icon: Database },
   { id: 'users', label: 'User Management', icon: Users },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'notifications', label: 'Notifications', icon: Bell },

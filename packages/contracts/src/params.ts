@@ -93,6 +93,7 @@ export const testResultsSearchSchema = z.object({
 })
 
 export const settingsSectionSchema = z.enum([
+  'storage',
   'general',
   'users',
   'projects',

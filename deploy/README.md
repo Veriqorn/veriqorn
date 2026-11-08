@@ -294,3 +294,8 @@ Available package versions are listed at `https://github.com/orgs/veriqorn/packa
 ## License
 
 The files in this repository are licensed under Apache-2.0.
+# Configurable object storage
+
+Administrators can select MinIO or Amazon S3 in **Settings > Storage**.
+See [object storage setup](../docs/object-storage.md) for encryption, credentials,
+existing attachment behavior, and `compose.s3.yml` for deployments without MinIO.

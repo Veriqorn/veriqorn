@@ -14,6 +14,7 @@ import {
   Bot,
   Check,
   Download,
+  Database,
   FileUp,
   FolderKanban,
   KeyRound,
@@ -66,6 +67,7 @@ import { authedRoute } from '@/routes/authed'
 import { validateSettingsSearch, type SettingsSection } from '@/router/search'
 import type { ProjectSummary, UserProjectAccess } from '@/types'
 
+import { StorageSection } from '@/components/settings/storage-section'
 import { settingsSections } from '@/config/settings-navigation'
 import { isFrontendContributionEntitled, loadFrontendExtensions, settingsContributions, type LoadedFrontendExtension } from '@/extensions/registry'
 
@@ -107,6 +109,7 @@ type ApiKeyRecord = {
 type ProjectUserAccessRecord = UserProjectAccess
 
 const sectionConfig: Record<SettingsSection, SectionConfig> = {
+  storage: { description: 'Manage storage for attachments, screenshots, and traces.', icon: Database, note: '', state: 'live', title: 'Storage' },
   'ai-analysis': {
     description: 'Configure the AI connection and evidence sources used for analysis.',
     icon: Bot,
@@ -385,7 +388,7 @@ function SettingsPage() {
             <CardDescription>All settings live under one typed `/settings?section=*` route.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            {settingsSections.map((section) => {
+            {settingsSections.filter(section => section.id !== 'storage' || user?.role === 'admin').map((section) => {
               const Icon = sectionConfig[section.id].icon
               const isActive = search.section === section.id
 
@@ -510,6 +513,10 @@ function SettingsPage() {
             queryClient={queryClient}
             rerunSettings={rerunSettingsQuery.data}
           />
+        ) : null}
+
+        {search.section === 'storage' ? (
+          <StorageSection apiClient={apiClient} isAdmin={user?.role === 'admin'} />
         ) : null}
 
         {search.section === 'updates' ? (

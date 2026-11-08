@@ -29,6 +29,7 @@ import {
   runIdParamSchema,
   runsListResponseSchema,
   sessionSchema,
+  storageConnectionRequestSchema,
   updateMeProfileRequestSchema,
   updateDashboardRequestSchema,
   updateProjectRequestSchema,
@@ -43,6 +44,7 @@ import { z } from "zod";
 import { broadcastRunEvent } from "./app";
 import { readValidatedJsonBody, readValidatedSearch, validateContract } from "./contracts";
 import { HttpError } from "./errors";
+import { STORAGE_SETTINGS_KEY } from "./object-storage";
 import { getBackendExtensionStatuses, type InitializedBackendExtension } from "./extensions";
 import {
   buildAuthCookie,
@@ -536,8 +538,8 @@ const serveTraceAttachment = async (services: AppServices, request: Request, tok
   }
 
   let buffer: Buffer | null = attachment.content ? toAttachmentBuffer(attachment.content) : null;
-  if (!buffer && attachment.storageType === "minio" && attachment.storageBucket && attachment.objectKey) {
-    buffer = await services.minio.getFile(attachment.storageBucket, attachment.objectKey);
+  if (!buffer && ["minio", "s3"].includes(attachment.storageType ?? "") && attachment.storageBucket && attachment.objectKey) {
+    buffer = await services.minio.getFile(attachment.storageBucket, attachment.objectKey, attachment.storageConnectionId);
   }
   if (!buffer) {
     throw new HttpError(404, "TRACE_CONTENT_NOT_FOUND", "Trace content not available");
@@ -618,8 +620,8 @@ export const registerRoutes = (
     if (!attachment) throw new HttpError(404, "ATTACHMENT_NOT_FOUND", "Attachment not found");
 
     let payload: Buffer | null = attachment.content ? toAttachmentBuffer(attachment.content) : null;
-    if (!payload && attachment.storageType === "minio" && attachment.storageBucket && attachment.objectKey) {
-      payload = await services.minio.getFile(attachment.storageBucket, attachment.objectKey);
+    if (!payload && ["minio", "s3"].includes(attachment.storageType ?? "") && attachment.storageBucket && attachment.objectKey) {
+      payload = await services.minio.getFile(attachment.storageBucket, attachment.objectKey, attachment.storageConnectionId);
     }
     if (!payload) throw new HttpError(404, "ATTACHMENT_CONTENT_NOT_FOUND", "Attachment content not available");
 
@@ -1126,8 +1128,8 @@ export const registerRoutes = (
         }
 
         let payload: Buffer | null = attachment.content ? toAttachmentBuffer(attachment.content) : null;
-        if (!payload && attachment.storageType === "minio" && attachment.storageBucket && attachment.objectKey) {
-          payload = await services.minio.getFile(attachment.storageBucket, attachment.objectKey);
+        if (!payload && ["minio", "s3"].includes(attachment.storageType ?? "") && attachment.storageBucket && attachment.objectKey) {
+          payload = await services.minio.getFile(attachment.storageBucket, attachment.objectKey, attachment.storageConnectionId);
         }
         if (!payload) {
           throw new HttpError(404, "ATTACHMENT_CONTENT_NOT_FOUND", "Attachment content not available");
@@ -1547,10 +1549,31 @@ export const registerRoutes = (
       || /(?:api[_-]?key|auth[_-]?token|password|secret)/i.test(key);
 
     const assertExternalSettingKey = (key: string) => {
-      if (["aiLicenseInstallationId", "aiLicenseInstallationPrivateKey", "aiLicenseInstallationCreatedAt"].includes(key)) {
+      if (key === STORAGE_SETTINGS_KEY || ["aiLicenseInstallationId", "aiLicenseInstallationPrivateKey", "aiLicenseInstallationCreatedAt"].includes(key)) {
         throw new HttpError(403, "INTERNAL_SETTING", "This setting is managed internally.");
       }
     };
+
+    api.group("/system/storage", (storage) => {
+      storage.get("/", async ({ request }) => {
+        await requireAdmin(request);
+        return ok(request, await services.minio.getSettings());
+      });
+      storage.post("/connections", async ({ request }) => {
+        await requireAdmin(request);
+        const body = await readValidatedJsonBody(request, storageConnectionRequestSchema);
+        return ok(request, await services.minio.addConnection(body));
+      });
+      storage.post("/connections/:id/check", async ({ request, params }) => {
+        await requireAdmin(request);
+        return ok(request, await services.minio.checkConnection(params.id));
+      });
+      storage.post("/connections/:id/activate", async ({ request, params }) => {
+        await requireAdmin(request);
+        return ok(request, await services.minio.activateConnection(params.id));
+      });
+      return storage;
+    });
 
     api.group("/settings", (settings) => {
       settings.get("/branding/logo", async ({ request }) => {

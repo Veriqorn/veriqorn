@@ -2,7 +2,8 @@ import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from
 
 import { compare, getRounds as bcryptGetRounds, hash as bcryptHash } from "bcrypt";
 import { SignJWT, jwtVerify } from "jose";
-import { Client } from "minio";
+import { ObjectStorageService as MinioStorageService } from "./object-storage";
+export { ObjectStorageService as MinioStorageService } from "./object-storage";
 import { DataSource, Repository } from "typeorm";
 import type { LlmChatMessage, LlmServicePort } from "@veriqorn/contracts";
 
@@ -316,82 +317,6 @@ class ExtensionAiChatProxy implements AiChatPort {
   sendMessage(testResultId: string, testRunId: number, content: string, authorName?: string) { return this.provider().sendMessage(testResultId, testRunId, content, authorName); }
   getMessageTestResultId(messageId: number) { return this.provider().getMessageTestResultId(messageId); }
   deleteMessage(messageId: number) { return this.provider().deleteMessage(messageId); }
-}
-
-export class MinioStorageService {
-  private client: Client | null = null;
-  private enabled: boolean;
-
-  constructor(private readonly config: AppConfig) {
-    this.enabled = config.minioEnabled;
-
-    if (this.enabled) {
-      try {
-        this.client = new Client({
-          endPoint: config.minioEndpoint,
-          port: config.minioPort,
-          useSSL: config.minioUseSsl,
-          accessKey: config.minioAccessKey,
-          secretKey: config.minioSecretKey,
-        });
-      } catch {
-        this.enabled = false;
-      }
-    }
-  }
-
-  async initialize(): Promise<void> {
-    if (!this.isAvailable()) {
-      return;
-    }
-
-    for (const bucket of ["artifacts", "traces", "screenshots"]) {
-      const exists = await this.client!.bucketExists(bucket);
-      if (!exists) {
-        await this.client!.makeBucket(bucket);
-      }
-    }
-  }
-
-  isAvailable(): boolean {
-    return this.enabled && this.client !== null;
-  }
-
-  async uploadBuffer(bucketName: string, objectName: string, buffer: Buffer, contentType: string): Promise<void> {
-    if (!this.isAvailable()) {
-      return;
-    }
-
-    await this.client!.putObject(bucketName, objectName, buffer, buffer.length, {
-      "Content-Type": contentType,
-    });
-  }
-
-  async getFile(bucketName: string, objectName: string): Promise<Buffer | null> {
-    if (!this.isAvailable()) {
-      return null;
-    }
-
-    try {
-      const stream = await this.client!.getObject(bucketName, objectName);
-      return await new Promise<Buffer>((resolve, reject) => {
-        const chunks: Buffer[] = [];
-        stream.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
-        stream.on("end", () => resolve(Buffer.concat(chunks)));
-        stream.on("error", reject);
-      });
-    } catch {
-      return null;
-    }
-  }
-
-  async deleteFile(bucketName: string, objectName: string): Promise<void> {
-    if (!this.isAvailable()) {
-      return;
-    }
-
-    await this.client!.removeObject(bucketName, objectName);
-  }
 }
 
 export type PlatformUpdateStatus = {
@@ -2304,7 +2229,13 @@ export const createServices = async (config: AppConfig, dataSource: DataSource):
     projectRepository as any,
     projects as any,
   );
-  const minio = new MinioStorageService(config);
+  const settingsSvc = new SimpleSettingsService(settingsRepository);
+  const minio = new MinioStorageService(config, settingsSvc, undefined, action =>
+    dataSource.transaction(async manager => {
+      await manager.query("SELECT pg_advisory_xact_lock(1763800000)");
+      return action(new SimpleSettingsService(manager.getRepository(Settings)));
+    }),
+  );
   await minio.initialize();
 
   const allureImport = new LegacyAllureImportService(
@@ -2321,7 +2252,6 @@ export const createServices = async (config: AppConfig, dataSource: DataSource):
   const chatConversationRepository = dataSource.getRepository(ChatConversation);
   const chatMessageRepository = dataSource.getRepository(ChatMessage);
 
-  const settingsSvc = new SimpleSettingsService(settingsRepository);
   const installationIdentity = new InstallationIdentityService(settingsSvc);
   const aiEditionSvc = new AiEditionNativeService(settingsSvc, installationIdentity);
   const entitlementSvc = new EntitlementService(installationIdentity, settingsSvc);

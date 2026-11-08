@@ -138,6 +138,7 @@ export class TestResultsQueryService {
     content: Buffer | string | null;
     storageType?: string | null;
     storageBucket?: string | null;
+    storageConnectionId?: string | null;
     objectKey?: string | null;
     size?: number | null;
     checksum?: string | null;
@@ -155,6 +156,7 @@ export class TestResultsQueryService {
           ta.content,
           ta."storageType" as "storageType",
           ta."storageBucket" as "storageBucket",
+          ta."storageConnectionId" as "storageConnectionId",
           ta."objectKey" as "objectKey",
           ta."size" as "size",
           ta.checksum

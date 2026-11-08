@@ -22,7 +22,7 @@ type NormalizedDiagnostics = {
 
 type AttachmentStorageMode = "test_attachment" | "test_step_attachment";
 
-type AttachmentStorageType = "database" | "minio";
+type AttachmentStorageType = "database" | "minio" | "s3";
 
 type StoredAttachmentRef = {
   id: string;
@@ -33,6 +33,7 @@ type StoredAttachmentRef = {
   testResultId?: string | null;
   storageType?: AttachmentStorageType | null;
   storageBucket?: string | null;
+  storageConnectionId?: string | null;
   objectKey?: string | null;
 };
 
@@ -201,15 +202,15 @@ export class AllureImportService {
     return type.startsWith("text/") || this.inlineAttachmentTypes.has(type);
   }
 
-  private canUseObjectStorage(): boolean {
-    return Boolean(this.minioService?.isAvailable());
+  private async canUseObjectStorage(): Promise<boolean> {
+    return Boolean(await this.minioService?.isAvailable());
   }
 
-  private shouldStoreAttachmentInObjectStorage(
+  private async shouldStoreAttachmentInObjectStorage(
     content: Buffer,
     type: string,
-  ): boolean {
-    if (!this.canUseObjectStorage()) {
+  ): Promise<boolean> {
+    if (!await this.canUseObjectStorage()) {
       return false;
     }
 
@@ -259,12 +260,7 @@ export class AllureImportService {
     attachmentId: string,
     sourceId: string,
     name: string,
-    existing?: StoredAttachmentRef,
   ): string {
-    if (existing?.objectKey) {
-      return existing.objectKey;
-    }
-
     const fileName = this.sanitizeAttachmentFileName(
       sourceId || name || attachmentId,
     );
@@ -276,10 +272,10 @@ export class AllureImportService {
     attachment: StoredAttachmentRef,
   ): Promise<void> {
     if (
-      attachment.storageType !== "minio" ||
+      !["minio", "s3"].includes(attachment.storageType ?? "") ||
       !attachment.storageBucket ||
       !attachment.objectKey ||
-      !this.canUseObjectStorage()
+      !this.minioService
     ) {
       return;
     }
@@ -288,6 +284,7 @@ export class AllureImportService {
       await this.minioService!.deleteFile(
         attachment.storageBucket,
         attachment.objectKey,
+        attachment.storageConnectionId,
       );
     } catch (error) {
       console.warn(
@@ -307,6 +304,7 @@ export class AllureImportService {
   }): Promise<{
     content: Buffer | null;
     storageType: AttachmentStorageType;
+    storageConnectionId: string | null;
     storageBucket: string | null;
     objectKey: string | null;
     size: number;
@@ -317,11 +315,12 @@ export class AllureImportService {
     const normalizedType = params.type.toLowerCase();
 
     if (
-      !this.shouldStoreAttachmentInObjectStorage(params.content, normalizedType)
+      !await this.shouldStoreAttachmentInObjectStorage(params.content, normalizedType)
     ) {
       return {
         content: params.content,
         storageType: "database",
+        storageConnectionId: null,
         storageBucket: null,
         objectKey: null,
         size,
@@ -339,11 +338,10 @@ export class AllureImportService {
       params.attachmentId,
       params.sourceId,
       params.name,
-      params.existing,
     );
 
     try {
-      await this.minioService!.uploadBuffer(
+      const location = await this.minioService!.uploadBuffer(
         storageBucket,
         objectKey,
         params.content,
@@ -352,20 +350,19 @@ export class AllureImportService {
 
       return {
         content: null,
-        storageType: "minio",
-        storageBucket,
-        objectKey,
+        ...location,
         size,
         checksum,
       };
-    } catch (error) {
+    } catch {
       console.warn(
-        `Failed to upload attachment ${params.sourceId} to MinIO, storing inline in Postgres instead: ${error instanceof Error ? error.message : "unknown error"}`,
+        `Failed to upload attachment ${params.sourceId} to object storage, storing inline in Postgres instead`,
       );
 
       return {
         content: params.content,
         storageType: "database",
+        storageConnectionId: null,
         storageBucket: null,
         objectKey: null,
         size,
@@ -392,6 +389,7 @@ export class AllureImportService {
           ta."testResultId"::text as "testResultId",
           ta."storageType" as "storageType",
           ta."storageBucket" as "storageBucket",
+          ta."storageConnectionId" as "storageConnectionId",
           ta."objectKey" as "objectKey"
         FROM public.test_attachment ta
         LEFT JOIN public.test_step ts ON ts.id = ta."stepId"
@@ -442,6 +440,7 @@ export class AllureImportService {
     if (storageMode === "test_attachment") {
       const previousLocation = {
         storageType: attachment.storageType,
+        storageConnectionId: attachment.storageConnectionId,
         storageBucket: attachment.storageBucket,
         objectKey: attachment.objectKey,
       };
@@ -465,8 +464,9 @@ export class AllureImportService {
           "storageBucket" = $4,
           "objectKey" = $5,
           "size" = $6,
-          checksum = $7
-        WHERE id::text = $8
+          checksum = $7,
+          "storageConnectionId" = $8
+        WHERE id::text = $9
         `,
         [
           persisted.content,
@@ -476,13 +476,15 @@ export class AllureImportService {
           persisted.objectKey,
           persisted.size,
           persisted.checksum,
+          persisted.storageConnectionId,
           attachment.id,
         ],
       );
 
       if (
-        previousLocation.storageType === "minio" &&
-        (persisted.storageType !== "minio" ||
+        ["minio", "s3"].includes(previousLocation.storageType ?? "") &&
+        (previousLocation.storageType !== persisted.storageType ||
+          (previousLocation.storageConnectionId ?? null) !== persisted.storageConnectionId ||
           previousLocation.storageBucket !== persisted.storageBucket ||
           previousLocation.objectKey !== persisted.objectKey)
       ) {
@@ -537,6 +539,7 @@ export class AllureImportService {
         : {
             content: null,
             storageType: "database" as const,
+            storageConnectionId: null,
             storageBucket: null,
             objectKey: null,
             size: null,
@@ -556,9 +559,10 @@ export class AllureImportService {
           "storageBucket",
           "objectKey",
           "size",
-          checksum
+          checksum,
+          "storageConnectionId"
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING id::text as id
         `,
         [
@@ -574,6 +578,7 @@ export class AllureImportService {
           persisted.objectKey,
           persisted.size,
           persisted.checksum,
+          persisted.storageConnectionId,
         ],
       );
 

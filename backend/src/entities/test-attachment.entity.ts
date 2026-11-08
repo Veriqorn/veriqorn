@@ -20,7 +20,10 @@ export class TestAttachment {
   content: Buffer;
 
   @Column({ type: "varchar", length: 16, default: "database" })
-  storageType: "database" | "minio";
+  storageType: "database" | "minio" | "s3";
+
+  @Column({ type: "varchar", length: 64, nullable: true })
+  storageConnectionId: string | null;
 
   @Column({ type: "varchar", length: 255, nullable: true })
   storageBucket: string | null;

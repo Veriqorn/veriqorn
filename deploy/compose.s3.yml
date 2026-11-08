@@ -1,0 +1,22 @@
+# Docker Compose 2.24.4+. Use only for fresh S3 installations, or once no
+# attachments remain in the bundled MinIO. Keep it running during migration.
+services:
+  backend:
+    environment:
+      MINIO_ENABLED: ${MINIO_ENABLED:-false}
+    depends_on: !override
+      postgres:
+        condition: service_healthy
+
+  minio:
+    profiles: ["local-minio"]
+  minio-init:
+    profiles: ["local-minio"]
+
+  update-agent:
+    environment:
+      # The same overlays must be used by subsequent in-app updates. For
+      # Enterprise set this variable to include compose.enterprise.yml too.
+      UPDATE_COMPOSE_FILES: ${UPDATE_COMPOSE_FILES:-/install/docker-compose.yml,/install/compose.s3.yml}
+    volumes:
+      - ./compose.s3.yml:/install/compose.s3.yml:ro

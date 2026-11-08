@@ -48,6 +48,7 @@ export type AppConfig = {
   minioUseSsl: boolean;
   minioAccessKey: string;
   minioSecretKey: string;
+  storageEncryptionKey?: string;
   traceTokenSecret: string;
   traceTokenTtlSeconds: number;
   bootstrapEmptyDatabase: boolean;
@@ -228,6 +229,7 @@ export const loadConfig = (): AppConfig => {
     minioUseSsl: parseBoolean(process.env.MINIO_USE_SSL, false),
     minioAccessKey: process.env.MINIO_ACCESS_KEY?.trim() || "",
     minioSecretKey: process.env.MINIO_SECRET_KEY?.trim() || "",
+    storageEncryptionKey: process.env.VERIQORN_STORAGE_ENCRYPTION_KEY?.trim() || undefined,
     traceTokenSecret: traceTokenSecret || jwtSecret,
     traceTokenTtlSeconds: parseNumber(process.env.TRACE_TOKEN_TTL_SECONDS, 300),
     bootstrapEmptyDatabase: parseBoolean(
