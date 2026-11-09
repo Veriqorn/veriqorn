@@ -10,6 +10,7 @@ import {
   createAllureImportJobFormSchema,
   createAllureImportJobRequestSchema,
   createApiKeyRequestSchema,
+  createdApiKeySchema,
   createDashboardRequestSchema,
   createProjectRequestSchema,
   createRunRequestSchema,
@@ -860,7 +861,7 @@ export const registerRoutes = (
         "PROFILE_VALIDATION",
         "Invalid API key payload",
       );
-      return ok(request, await services.profile.createApiKey(user, body));
+      return ok(request, createdApiKeySchema.parse(await services.profile.createApiKey(user, body)));
     };
 
     const listApiKeys = async ({ request }: { request: Request }) => {

@@ -2,6 +2,7 @@ import {
   apiKeySchema,
   assignProjectMemberRequestSchema,
   createApiKeyRequestSchema,
+  createdApiKeySchema,
   createProjectRequestSchema,
   meProfileSchema,
   projectRoleSchema,
@@ -268,16 +269,11 @@ function SettingsPage() {
   const createApiKeyMutation = useMutation({
     mutationFn: async () => {
       const body = createApiKeyRequestSchema.parse({
-        expiresAt: createApiKeyExpiresAt.trim() || undefined,
+        expiresAt: createApiKeyExpiresAt.trim() ? new Date(createApiKeyExpiresAt).toISOString() : undefined,
         name: createApiKeyName.trim(),
       })
       const payload = await apiClient.post<unknown>('/api/v1/me/api-keys', body)
-      const source = unwrapApiData(payload)
-      const record = isRecord(source) ? source : {}
-      return {
-        ...apiKeySchema.parse(record),
-        key: typeof record.key === 'string' ? record.key : '',
-      }
+      return createdApiKeySchema.parse(unwrapApiData(payload))
     },
     onError: (error) => {
       setApiKeyError(resolveErrorMessage(error, 'Failed to create API key.'))

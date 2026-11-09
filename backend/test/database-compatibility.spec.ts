@@ -16,6 +16,10 @@ import { TestResult } from "../src/entities/test-result.entity";
 import { TestStep } from "../src/entities/test-step.entity";
 import { AllureImportService } from "../src/domain/allure-import";
 import { TestResultsQueryService } from "../src/domain/test-results-query";
+import { apiKeySchema, createdApiKeySchema } from "@veriqorn/contracts";
+import { createApp } from "../src/app";
+import { createServices } from "../src/services";
+import { ApiKey } from "../src/entities/api-key.entity";
 import { AddAttachmentStorageConnection1763800000000 } from "../migrations/1763800000000-AddAttachmentStorageConnection";
 import type { MinioStorageService } from "../src/services";
 
@@ -30,6 +34,8 @@ describe.skipIf(!databaseUrl)("PostgreSQL dependency compatibility", () => {
   const config = createTestConfig({
     migrationsGlob: resolveMigrationsGlob(resolve(import.meta.dir, "..")),
     runMigrations: true,
+    bootstrapAdminEmail: "api-key-smoke@example.test",
+    bootstrapAdminPassword: "ApiKeyRegression1!",
   });
 
   beforeAll(async () => {
@@ -75,6 +81,48 @@ describe.skipIf(!databaseUrl)("PostgreSQL dependency compatibility", () => {
 
   it("rejects undefined identifiers instead of dropping the query filter", async () => {
     await expect(dataSource.getRepository(User).findOneBy({ id: undefined })).rejects.toThrow();
+  });
+
+  it("creates contract-valid API keys after login and supports use, listing and revocation", async () => {
+    const app = createApp(config, await createServices(config, dataSource));
+    const login = await app.handle(new Request("http://localhost/api/v1/auth/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "http://localhost:3000" },
+      body: JSON.stringify({ email: config.bootstrapAdminEmail, password: config.bootstrapAdminPassword }),
+    }));
+    expect(login.status).toBe(200);
+    const cookie = login.headers.get("set-cookie")!.split(";")[0];
+    const headers = { Cookie: cookie, "Content-Type": "application/json", Origin: "http://localhost:3000" };
+    for (const expiresAt of [undefined, "2099-01-02T03:04:00.000Z"]) {
+      const response = await app.handle(new Request("http://localhost/api/v1/me/api-keys", {
+        method: "POST", headers, body: JSON.stringify({ name: "API key regression", expiresAt }),
+      }));
+      expect(response.status).toBe(200);
+      const created = createdApiKeySchema.parse((await response.json()).data);
+      expect(created.lastUsedAt).toBeNull();
+      expect(created.expiresAt).toBe(expiresAt ?? null);
+      expect(created.key).toMatch(/^qarp_[a-f0-9]{64}$/);
+      const stored = await dataSource.getRepository(ApiKey).findOneByOrFail({ id: created.id });
+      expect(stored.keyHash).not.toBe(created.key);
+      expect(stored.keyHash).toHaveLength(64);
+      const use = await app.handle(new Request("http://localhost/api/v1/me", {
+        headers: { Authorization: `Bearer ${created.key}` },
+      }));
+      expect(use.status).toBe(200);
+      const list = await app.handle(new Request("http://localhost/api/v1/me/api-keys", { headers }));
+      const listed = (await list.json()).data as unknown[];
+      expect(listed).toHaveLength(1);
+      expect(apiKeySchema.parse(listed[0]).lastUsedAt).not.toBeNull();
+      expect(listed[0]).not.toHaveProperty("key");
+      const deleted = await app.handle(new Request(`http://localhost/api/v1/me/api-keys/${created.id}`, {
+        method: "DELETE", headers,
+      }));
+      expect(deleted.status).toBe(200);
+      const revoked = await app.handle(new Request("http://localhost/api/v1/me", {
+        headers: { Authorization: `Bearer ${created.key}` },
+      }));
+      expect(revoked.status).toBe(401);
+    }
   });
 
   it("upgrades legacy attachment references and prevents losing new references on rollback", async () => {

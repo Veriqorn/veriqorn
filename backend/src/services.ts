@@ -556,6 +556,7 @@ class ProfileService {
       key: rawKey,
       keyPrefix: saved.keyPrefix,
       name: saved.name,
+      lastUsedAt: saved.lastUsedAt ? saved.lastUsedAt.toISOString() : null,
       createdAt: saved.createdAt.toISOString(),
       expiresAt: saved.expiresAt ? saved.expiresAt.toISOString() : null,
     };
