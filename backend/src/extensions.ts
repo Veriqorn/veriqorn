@@ -224,7 +224,7 @@ const createRuntimeContext = (extension: LoadedBackendExtension, config: AppConf
       },
       network: {
         outboundAllowedHosts: [...config.outboundAllowedHosts],
-        assertSafeOutboundUrl: async (url) => (await assertSafeOutboundUrl(url, config.outboundAllowedHosts)).toString(),
+        assertSafeOutboundUrl: async (url) => (await assertSafeOutboundUrl(url, config.outboundAllowedHosts, config.outboundPrivateAllowedOrigins)).toString(),
       },
     },
     logger: createLogger(extension.manifest.id),

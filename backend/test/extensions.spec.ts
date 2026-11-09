@@ -58,6 +58,25 @@ describe('extension manifest loader', () => {
     expect(extensions[0]?.manifest.id).toBe('sample')
   })
 
+  test('applies the operator private-origin policy to extension network requests', async () => {
+    mkdirSync(tmpRoot, { recursive: true })
+    const manifestPath = join(tmpRoot, 'extensions.json')
+    writeFileSync(join(tmpRoot, 'local-network.mjs'), `export const extension = {
+      manifest: { id: 'local-network', version: '1.0.0', sdkApiVersion: 1, requiresCore: '*' },
+      registerServices: async ({ core }) => ({ endpoint: await core.network.assertSafeOutboundUrl('http://127.0.0.1:1234/v1/chat/completions') }),
+    };`)
+    writeFileSync(manifestPath, JSON.stringify({ schemaVersion: 1, extensions: [
+      { id: 'local-network', version: '1.0.0', module: './local-network.mjs', sdkApiVersion: 1, requiresCore: '*' },
+    ] }))
+    const config = createTestConfig({ extensionsManifestPath: manifestPath, extensionsRoot: tmpRoot, outboundAllowedHosts: ['127.0.0.1'] })
+    const services = createTestServices({ config })
+    const loaded = await loadBackendExtensions(config)
+    await expect(initializeBackendExtensions(config, services, loaded)).rejects.toThrow('private or reserved')
+    config.outboundPrivateAllowedOrigins = ['http://127.0.0.1:1234']
+    const initialized = await initializeBackendExtensions(config, services, loaded)
+    expect(initialized[0]?.services.endpoint).toBe('http://127.0.0.1:1234/v1/chat/completions')
+  })
+
   test('loads a UTF-8 BOM-prefixed manifest', async () => {
     mkdirSync(tmpRoot, { recursive: true })
     const modulePath = join(tmpRoot, 'bom-sample.mjs')

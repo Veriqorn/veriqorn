@@ -4,6 +4,7 @@ import { resolve } from "path";
 import { existsSync } from "fs";
 import { config as loadDotEnv } from "dotenv";
 import { DataSource } from "typeorm";
+import { parsePrivateOutboundOrigins } from "./outbound";
 
 import type { LoadedBackendExtension } from "./extensions";
 
@@ -39,6 +40,7 @@ export type AppConfig = {
   importRoot: string;
   localRepositoryRoots: string[];
   outboundAllowedHosts: string[];
+  outboundPrivateAllowedOrigins?: string[];
   backendPublicDir: string;
   uploadsDir: string;
   migrationsGlob: string;
@@ -220,6 +222,7 @@ export const loadConfig = (): AppConfig => {
       .map((entry) => resolve(workspaceRoot, entry.trim()))
       .filter(Boolean),
     outboundAllowedHosts: (process.env.OUTBOUND_ALLOWED_HOSTS?.split(",") ?? []).map((entry) => entry.trim().toLowerCase()).filter(Boolean),
+    outboundPrivateAllowedOrigins: parsePrivateOutboundOrigins(process.env.OUTBOUND_PRIVATE_ALLOWED_ORIGINS),
     backendPublicDir: resolve(projectRoot, "public"),
     uploadsDir: resolve(projectRoot, "uploads"),
     migrationsGlob: resolveMigrationsGlob(projectRoot),
